@@ -149,7 +149,7 @@
 
     <section>
       <p class="section-title">Répartition des 10 000 €</p>
-      <p class="section-sub">7 lignes — barre empilée, ordre fixe</p>
+      <p class="section-sub">7 lignes — barre empilée, ordre fixe · rééquilibrage du 26/07/2026 : STMicroelectronics allégée (1000 € → 500 €) après un drawdown de ~25% depuis début juillet, capital réparti sur les 5 autres valeurs</p>
       <div class="card alloc-card">
         <div class="alloc-bar" id="alloc-bar"></div>
         <div class="alloc-legend" id="alloc-legend"></div>
@@ -184,24 +184,24 @@
 (function () {
   var colors = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)", "var(--c6)", "var(--c7)"];
   var positions = [
-    { name: "Thales", sector: "Défense / cybersécurité", amount: 2000, link: "Budgets militaires en hausse, tensions géopolitiques", risk: "modéré",
-      price: "236,40 €", priceNum: 236.40, entryPrice: 236.40, entryDate: "2026-07-26", change: "-0,80 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Carnet de commandes record 53,3 Md€ (2025) · capitalisation 48,68 Md€ · commandes T2 en forte hausse (radars Roumanie, accord-cadre Rheinmetall)",
+    { name: "Thales", sector: "Défense / cybersécurité", amount: 2118, link: "Budgets militaires en hausse, tensions géopolitiques", risk: "modéré",
+      price: "236,40 €", priceNum: 236.40, entryPrice: 236.40, entryDate: "2026-07-26", change: "-0,80 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Carnet de commandes record 53,3 Md€ (2025) · capitalisation 48,68 Md€ · commandes T2 en forte hausse (radars Roumanie, accord-cadre Rheinmetall) · allocation renforcée le 26/07/2026 (rééquilibrage, voir STMicroelectronics)",
       source: "https://www.boursorama.com/cours/1rPHO/" },
-    { name: "Dassault Aviation", sector: "Aéronautique défense", amount: 2000, link: "A mené la levée Series B (200 M$) d'Harmattan AI ; détient 26% de Thales", risk: "modéré",
-      price: "299,20 €", priceNum: 299.20, entryPrice: 299.20, entryDate: "2026-07-26", change: "-1,77 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Exposition défense directe + accès indirect à l'écosystème drone (Harmattan AI) ; résultats S1 2026 en nette hausse (+83% résultat opérationnel ajusté)",
+    { name: "Dassault Aviation", sector: "Aéronautique défense", amount: 2118, link: "A mené la levée Series B (200 M$) d'Harmattan AI ; détient 26% de Thales", risk: "modéré",
+      price: "299,20 €", priceNum: 299.20, entryPrice: 299.20, entryDate: "2026-07-26", change: "-1,77 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Exposition défense directe + accès indirect à l'écosystème drone (Harmattan AI) ; résultats S1 2026 en nette hausse (+83% résultat opérationnel ajusté) · allocation renforcée le 26/07/2026 (rééquilibrage, voir STMicroelectronics)",
       source: "https://www.boursorama.com/cours/1rPAM/" },
-    { name: "Valeo", sector: "Équipementier auto → drones", amount: 1500, link: "Partenariat direct Harmattan AI (moteurs de drones, sujet Drone du radar)", risk: "modéré",
-      price: "13,73 €", priceNum: 13.73, entryPrice: 13.73, entryDate: "2026-07-26", change: "-2,31 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Diversification vers la défense après les datacenters ; production France dès 2027",
+    { name: "Valeo", sector: "Équipementier auto → drones", amount: 1588, link: "Partenariat direct Harmattan AI (moteurs de drones, sujet Drone du radar)", risk: "modéré",
+      price: "13,73 €", priceNum: 13.73, entryPrice: 13.73, entryDate: "2026-07-26", change: "-2,31 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Diversification vers la défense après les datacenters ; production France dès 2027 · allocation renforcée le 26/07/2026 (rééquilibrage, voir STMicroelectronics)",
       source: "https://www.boursorama.com/cours/1rPFR/" },
-    { name: "Safran", sector: "Aéronautique / défense", amount: 1500, link: "Cité systématiquement parmi les valeurs défense à suivre", risk: "modéré",
-      price: "329,80 €", priceNum: 329.80, entryPrice: 329.80, entryDate: "2026-07-26", change: "+2,61 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Diversifie l'exposition défense hors du duo Thales/Dassault Aviation",
+    { name: "Safran", sector: "Aéronautique / défense", amount: 1588, link: "Cité systématiquement parmi les valeurs défense à suivre", risk: "modéré",
+      price: "329,80 €", priceNum: 329.80, entryPrice: 329.80, entryDate: "2026-07-26", change: "+2,61 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Diversifie l'exposition défense hors du duo Thales/Dassault Aviation · allocation renforcée le 26/07/2026 (rééquilibrage, voir STMicroelectronics)",
       source: "https://www.boursorama.com/cours/1rPSAF/" },
-    { name: "Capgemini", sector: "Services IT / IA", amount: 1500, link: "Croissance +11% tirée par l'IA (T1 2026)", risk: "modéré",
-      price: "89,88 €", priceNum: 89.88, entryPrice: 89.88, entryDate: "2026-07-26", change: "+4,44 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Profil IA \"value\", moins volatil que les purs éditeurs de logiciels IA ; rebond après une phase de faiblesse en juin",
+    { name: "Capgemini", sector: "Services IT / IA", amount: 1588, link: "Croissance +11% tirée par l'IA (T1 2026)", risk: "modéré",
+      price: "89,88 €", priceNum: 89.88, entryPrice: 89.88, entryDate: "2026-07-26", change: "+4,44 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Profil IA \"value\", moins volatil que les purs éditeurs de logiciels IA ; rebond après une phase de faiblesse en juin · allocation renforcée le 26/07/2026 (rééquilibrage, voir STMicroelectronics)",
       source: "https://www.boursorama.com/cours/1rPCAP/" },
-    { name: "STMicroelectronics", sector: "Semi-conducteurs", amount: 1000, link: "Revenus datacenter IA visant ~1 Md$ en 2026", risk: "élevé",
-      price: "46,77 €", priceNum: 46.77, entryPrice: 46.77, entryDate: "2026-07-26", change: "-2,46 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Pari IA plus risqué : CA T2 +12,7% mais prévisions T3 sous les attentes, action ayant déjà chuté ~14-18% le 23/07",
-      source: "https://www.boursorama.com/cours/1rPSTMPA/" },
+    { name: "STMicroelectronics", sector: "Semi-conducteurs", amount: 500, link: "Revenus datacenter IA visant ~1 Md$ en 2026 (objectif relevé au T2)", risk: "élevé",
+      price: "46,77 €", priceNum: 46.77, entryPrice: 46.77, entryDate: "2026-07-26", change: "-2,46 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Allégée de 1000 € à 500 € le 26/07/2026 : le T2 2026 a battu le consensus (BPA 0,31$, retour au bénéfice, objectifs datacenter IA relevés à >1 Md$ 2026 / >2 Md$ 2027) mais la guidance T3 et la pression sur les marges ont fait chuter le titre de ~25% depuis le 01/07 ; analystes majoritairement \"Hold\", thèse IA/datacenter toujours valide mais risque à court terme confirmé — capital libéré réparti sur les 5 autres valeurs",
+      source: "https://www.boursorama.com/bourse/actualites/le-benefice-de-stmicroelectronics-est-inferieur-aux-previsions-l-action-recule-de-14-9cb711afd881fda84cd82bbd1d3c8e00" },
     { name: "Réserve de liquidités", sector: "—", amount: 500, link: "Observer Dassault Systèmes avant d'entrer (volatilité IA)", risk: "—",
       price: "—", priceNum: null, entryPrice: null, entryDate: null, change: "—", detail: "Dassault Systèmes a chuté fortement sur craintes de disruption IA (Anthropic/Prometheus) — à surveiller plutôt qu'à acheter tout de suite",
       source: "https://www.bloomberg.com/news/articles/2026-02-11/dassault-systemes-shares-plunge-most-since-2002-on-weak-outlook" }
