@@ -556,8 +556,8 @@
     { subject: "Immobilier Paris", name: "Notaires de France / Paris-IDF", type: "Source officielle", status: "ok" },
     { subject: "Immobilier Paris", name: "Qoridor (blog.qoridor.fr)", type: "Presse spécialisée", status: "ok" },
     { subject: "Immobilier Paris", name: "MeilleursAgents", type: "Presse spécialisée", status: "fail", note: "403 — écartée" },
-    { subject: "Cryptomonnaies", name: "CoinDesk", type: "Presse spécialisée", status: "ok" },
-    { subject: "Cryptomonnaies", name: "Zonebourse (cryptomonnaies)", type: "Données de marché", status: "ok" }
+    { subject: "Cryptomonnaies", name: "CoinGecko — Bitcoin", type: "Données de marché", status: "ok", note: "test PR #8, 26/07/2026" },
+    { subject: "Cryptomonnaies", name: "CoinGecko — Ethereum", type: "Données de marché", status: "ok", note: "test PR #8, 26/07/2026" }
   ];
   var allSourcesBody = document.getElementById("allsources-body");
   var okCount = allSources.filter(function (s) { return s.status === "ok" || s.status === "mixed"; }).length;
@@ -581,7 +581,7 @@
     { title: "Climat", html: "La Commission européenne a dévoilé le 17/07 une réforme du marché carbone (EU ETS) pour 2031-2040, avec une nouvelle Banque de décarbonation industrielle dotée de 100 Md€ — le prix de la tonne carbone (EUA) est monté jusqu'à 82 €/t début juillet, avec un impact identifiable sur les secteurs énergo-intensifs européens. Sources : <a href=\"https://www.indexbox.io/blog/european-carbon-prices-fluctuate-in-july-2026-ahead-of-ets-reform/\" target=\"_blank\" rel=\"noopener\">Indexbox</a>, <a href=\"https://asuene.com/us/blog/eu-ets-reform-2026-what-the-july-17-proposal-means-for-cbam-importers-and-carbon-costs\" target=\"_blank\" rel=\"noopener\">Asuene</a>." },
     { title: "Matières premières", html: "Le Brent a grimpé de +4,21% à 98,03$ et le WTI de +3,16% à 89,57$ le 23/07, franchissant les 100$/baril pour la première fois depuis mai, après des attaques houthies contre deux pétroliers saoudiens. L'or (4 051,70$, +0,08%) et le cuivre (6,30$/lb, -0,06%) restent sous le seuil de 2%. Sources : <a href=\"https://oilprice.com/Energy/Oil-Prices/Oil-Prices-Climb-Toward-100-as-Red-Sea-Risks-Rise.html\" target=\"_blank\" rel=\"noopener\">Oilprice.com</a>, <a href=\"https://www.fxleaders.com/news/2026/07/24/gold-price-forecast-july-24-2026-dollar4028-defends-dollar4000-as-brent-hits-dollar100-and-september-hike-odds-jump-to-80/\" target=\"_blank\" rel=\"noopener\">FX Leaders</a>, <a href=\"https://www.kitco.com/price/precious-metals\" target=\"_blank\" rel=\"noopener\">Kitco</a>." },
     { title: "Marché immobilier (Paris)", html: "<i>Rien à signaler aujourd'hui.</i> Prix des appartements à Paris intra-muros stable à 9 580 €/m² (+0,9% sur un an) ; aucune variation n'atteint le seuil de 2% et aucune tendance clairement actionnable n'est identifiée. Sources : <a href=\"https://paris.notaires.fr/fr/presse/communication-immobiliere-mensuelle/conjoncture-immobiliere-francilienne-en-fevrier-2026\" target=\"_blank\" rel=\"noopener\">Notaires de Paris/IDF</a>." },
-    { title: "Cryptomonnaies", html: "<i>Rien à signaler aujourd'hui.</i> Bitcoin à 64 322,24$ (+0,51% / 24h) et Ethereum à 1 878$ (-2,38% / 24h) — sous le seuil dédié de 5% en 24h, aucune décision réglementaire majeure identifiée. Sujet ajouté au radar le 26/07/2026." }
+    { title: "Cryptomonnaies", html: "<i>Rien à signaler aujourd'hui.</i> Bitcoin à ~64 455$ (+0,6% / 24h) et Ethereum à ~1 886$ (+1,3% / 24h) — sous le seuil dédié de 5% en 24h, aucune décision réglementaire majeure identifiée. Sujet ajouté au radar le 26/07/2026, section complétée le jour même via un test de vérification réel (PR #8)." }
   ];
   digestSections.forEach(function (s) {
     var block = document.createElement("div");
