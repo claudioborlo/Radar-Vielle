@@ -16,7 +16,9 @@ Référence : [architecture.md](../architecture.md) §2, [prd.md](../prd.md) FR1
 
 **Propagation** : même logique que Story B1 (pas de story séparée par sujet) — le prompt de la routine (Story A1) et le tableau de bord de tendances (Epic E) ont été mis à jour en conséquence le même jour pour intégrer ce 7ᵉ sujet.
 
-**Statut** : ✅ ajoutée le 2026-07-26 — à valider sur le prochain run réel de la routine (comme les 6 sujets existants, cf. critères d'acceptation de la Story B1).
+**Statut** : ✅ ajoutée le 2026-07-26 — validée par un test scopé réel (PR #8, voir note ci-dessous) : sources CoinGecko (BTC/ETH) effectivement récupérées, seuil de 5%/24h correctement évalué comme non atteint (BTC +0,6%, ETH +1,3%), aucune décision réglementaire majeure inventée. Prompt de la routine restauré à sa version complète (7 sujets) juste après le test.
+
+**Test technique isolé (2026-07-26)** : prompt de la routine temporairement remplacé par une version scopée au seul sujet Cryptomonnaies, `RemoteTrigger run` déclenché manuellement. Résultat écrit dans `digests/_test-crypto.md`, commité et mergé automatiquement via **PR #8**. Confirme que le mécanisme (recherche → lecture réelle → évaluation du déclencheur → écriture → merge auto) fonctionne aussi pour ce 7ᵉ sujet, sur le même modèle que les tests individuels des 6 sujets précédents (PR #1-#6).
 
 ## Story B3 — Tableau de bord dédié Drone + correction d'un bug d'échelle (2026-07-26)
 
