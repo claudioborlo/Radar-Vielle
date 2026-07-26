@@ -31,7 +31,7 @@ Référence périmètre/règles : [CLAUDE.md](../CLAUDE.md)
 |---|---|
 | 1. Bourse | Indices CAC 40, Euro Stoxx 50, S&P 500, Nasdaq, SSE Composite/Hang Seng ; Zonebourse, Investing.com, communiqués officiels BCE/Fed/PBoC |
 | 2. Tech/IA/IT | MIT Technology Review, Ars Technica, Numerama, blogs officiels des labs (OpenAI, Anthropic, Google DeepMind, Mistral), Stratechery |
-| 3. Robot/Drone | Usine Nouvelle, La Tribune, Air&Cosmos, communiqués DGA/Ministère des Armées, BPI France, Les Echos Industrie (articles en accès libre) |
+| 3. Robot/Drone | Usine Nouvelle, La Tribune, Air&Cosmos, communiqués DGA/Ministère des Armées, BPI France, Les Echos Industrie (articles en accès libre), Investing.com |
 | 4. Climat | GIEC/IPCC, ADEME, Ministère de la Transition écologique, Carbone 4 |
 | 5. Matières premières | LBMA (or), LME (cuivre), World Gold Council, Trading Economics, Kitco |
 | 6. Immobilier Paris | Chambre des Notaires de Paris/Île-de-France, INSEE, base Immobilier.notaires.fr |
