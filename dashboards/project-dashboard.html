@@ -1,0 +1,723 @@
+<title>Radar de veille — Tableau de bord</title>
+<style>
+  :root {
+    --bg: #f2f4f8;
+    --surface: #ffffff;
+    --surface-2: #eef1f6;
+    --text: #12161f;
+    --text-mute: #5b6472;
+    --border: rgba(18,22,31,0.12);
+    --amber: #c9791a;
+    --amber-bg: #fbeed9;
+    --green: #2f7a56;
+    --green-bg: #e3f3ea;
+    --red: #c94430;
+    --red-bg: #fbe6e2;
+    --shadow: 0 1px 2px rgba(18,22,31,0.06), 0 8px 24px rgba(18,22,31,0.05);
+    --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12161f; --surface: #1b212c; --surface-2: #212836;
+      --text: #e8eaf0; --text-mute: #8891a0; --border: rgba(232,234,240,0.12);
+      --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+      --green: #7fc4a0; --green-bg: rgba(111,174,140,0.16);
+      --red: #ee8271; --red-bg: rgba(225,96,77,0.16);
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12161f; --surface: #1b212c; --surface-2: #212836;
+    --text: #e8eaf0; --text-mute: #8891a0; --border: rgba(232,234,240,0.12);
+    --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+    --green: #7fc4a0; --green-bg: rgba(111,174,140,0.16);
+    --red: #ee8271; --red-bg: rgba(225,96,77,0.16);
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #f2f4f8; --surface: #ffffff; --surface-2: #eef1f6;
+    --text: #12161f; --text-mute: #5b6472; --border: rgba(18,22,31,0.12);
+    --amber: #c9791a; --amber-bg: #fbeed9;
+    --green: #2f7a56; --green-bg: #e3f3ea;
+    --red: #c94430; --red-bg: #fbe6e2;
+    --shadow: 0 1px 2px rgba(18,22,31,0.06), 0 8px 24px rgba(18,22,31,0.05);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .app {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: clamp(1rem, 3vw, 2.5rem);
+  }
+  .wrap { max-width: 72rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1.75rem; }
+
+  .header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; }
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin: 0 0 0.35rem; }
+  h1 { font-family: var(--mono); font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 600; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  .header-meta { font-family: var(--mono); font-size: 0.8rem; color: var(--text-mute); text-align: right; line-height: 1.6; }
+  .header-meta b { color: var(--text); font-weight: 600; }
+
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+  .section-title { font-family: var(--mono); font-size: 0.95rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+  .section-sub { font-size: 0.85rem; color: var(--text-mute); margin: 0.15rem 0 0; }
+
+  .pipeline { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; }
+  .stage { flex: 1 1 8rem; min-width: 8rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 0.9rem; box-shadow: var(--shadow); position: relative; }
+  .stage::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; background: var(--border); }
+  .stage[data-state="done"]::after { background: var(--green); }
+  .stage[data-state="active"]::after { background: var(--amber); }
+  .stage-name { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-mute); }
+  .stage-role { font-size: 0.85rem; font-weight: 600; margin: 0.2rem 0 0.4rem; }
+  .stage-state { font-family: var(--mono); font-size: 0.7rem; display: inline-flex; align-items: center; gap: 0.35rem; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+  .stage[data-state="done"] .dot { background: var(--green); }
+  .stage[data-state="active"] .dot { background: var(--amber); }
+  .stage[data-state="done"] .stage-state { color: var(--green); }
+  .stage[data-state="active"] .stage-state { color: var(--amber); }
+  .stage[data-state="pending"] .stage-state { color: var(--text-mute); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  .routine-card { padding: 1.1rem 1.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1rem 1.5rem; }
+  .stat-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mute); margin: 0 0 0.3rem; }
+  .stat-value { font-family: var(--mono); font-size: 0.95rem; font-weight: 600; }
+  .stat-value.small { font-size: 0.82rem; font-weight: 500; }
+  .pill { display: inline-flex; align-items: center; gap: 0.35rem; font-family: var(--mono); font-size: 0.72rem; padding: 0.22rem 0.55rem; border-radius: 999px; font-weight: 600; }
+  .pill.ok { background: var(--green-bg); color: var(--green); }
+  .pill.wait { background: var(--amber-bg); color: var(--amber); }
+  .pill.fail { background: var(--red-bg); color: var(--red); }
+
+  .focus-card { padding: 1.1rem 1.25rem 1.25rem; }
+  .focus-banner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-bottom: 0.9rem; margin-bottom: 0.9rem; border-bottom: 1px solid var(--border); }
+  .focus-banner p { margin: 0; font-size: 0.85rem; color: var(--text-mute); }
+  .focus-banner b { color: var(--text); font-family: var(--mono); font-weight: 600; }
+  .sources-wrap { overflow-x: auto; }
+  table.sources-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; min-width: 34rem; }
+  .sources-table th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-mute); font-weight: 600; padding: 0 0.7rem 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .sources-table td { padding: 0.6rem 0.7rem 0.6rem 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .sources-table tr:last-child td { border-bottom: none; }
+  .source-name { font-weight: 600; }
+  .source-type { color: var(--text-mute); font-size: 0.8rem; }
+  .source-note { color: var(--text-mute); font-size: 0.8rem; font-style: italic; }
+
+  .subjects { display: grid; grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr)); gap: 0.9rem; }
+  .subject { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .subject-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+  .subject-name { font-weight: 600; font-size: 0.95rem; margin: 0; }
+  .subject-num { font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute); }
+  .subject-angle { font-size: 0.82rem; color: var(--text-mute); line-height: 1.45; margin: 0; }
+  .subject-trigger { font-size: 0.78rem; line-height: 1.45; margin: 0; padding-top: 0.4rem; border-top: 1px dashed var(--border); color: var(--text); }
+  .subject-trigger b { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-mute); display: block; margin-bottom: 0.2rem; font-weight: 600; }
+
+  .digest-panel { padding: 0; overflow: hidden; }
+  .digest-head { position: relative; padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border); overflow: hidden; }
+  .digest-head::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, var(--amber-bg), transparent); width: 40%; animation: sweep 4.5s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { .digest-head::before { animation: none; opacity: 0; } }
+  @keyframes sweep { from { transform: translateX(-120%); } to { transform: translateX(340%); } }
+  .digest-head-inner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .empty-state { padding: 2.4rem 1.5rem; text-align: center; color: var(--text-mute); }
+  .empty-state .glyph { font-family: var(--mono); font-size: 1.6rem; color: var(--amber); margin-bottom: 0.6rem; }
+  .empty-state p { max-width: 32rem; margin: 0.4rem auto 0; font-size: 0.88rem; line-height: 1.55; }
+
+  .epics { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0.9rem; }
+  .epic-card { padding: 1rem 1.1rem 1.1rem; }
+  .epic-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.7rem; }
+  .epic-title { font-weight: 600; font-size: 0.88rem; margin: 0; }
+  .epic-count { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); }
+  ul.checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  .checklist li { display: flex; align-items: flex-start; gap: 0.55rem; font-size: 0.83rem; line-height: 1.4; cursor: pointer; }
+  .checklist input { appearance: none; width: 16px; height: 16px; flex: 0 0 16px; margin-top: 0.15rem; border: 1.5px solid var(--text-mute); border-radius: 4px; position: relative; cursor: pointer; }
+  .checklist input:checked { background: var(--green); border-color: var(--green); }
+  .checklist input:checked::after { content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--surface); font-weight: 700; }
+  .checklist input:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  .checklist span.done { text-decoration: line-through; color: var(--text-mute); }
+  .progress-track { height: 5px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-top: 0.8rem; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 999px; transition: width 0.25s ease; }
+
+  .status-note { font-size: 0.8rem; color: var(--text-mute); margin: 0.6rem 1.25rem 0; }
+  .signal-card { position: relative; border: 1px solid var(--amber); background: var(--amber-bg); border-radius: 12px; padding: 1.1rem 1.25rem 1.25rem; box-shadow: var(--shadow); overflow: hidden; }
+  .signal-card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); width: 35%; animation: sweep 5s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { .signal-card::before { animation: none; opacity: 0; } }
+  @media (prefers-color-scheme: dark) { .signal-card::before { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); } }
+  :root[data-theme="dark"] .signal-card::before { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); }
+  :root[data-theme="light"] .signal-card::before { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); }
+  .signal-head { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+  .signal-eyebrow { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); display: flex; align-items: center; gap: 0.4rem; margin: 0; }
+  .signal-title { position: relative; font-size: 1.05rem; font-weight: 700; margin: 0 0 0.5rem; }
+  .signal-body { position: relative; font-size: 0.9rem; line-height: 1.6; color: var(--text); max-width: 52rem; }
+  .signal-source { position: relative; margin-top: 0.7rem; font-size: 0.8rem; }
+  .signal-source a { font-weight: 600; }
+  .kpi-row { position: relative; display: flex; gap: 0.7rem; margin-top: 0.8rem; flex-wrap: wrap; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.8rem; min-width: 7.5rem; }
+  .kpi-label { font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-mute); margin: 0 0 0.2rem; }
+  .kpi-value { font-family: var(--mono); font-weight: 700; font-size: 0.92rem; margin: 0; }
+  .alert-box { border: 1px solid var(--red); background: var(--red-bg); border-radius: 10px; padding: 0.9rem 1.1rem; margin-top: 0.9rem; }
+  .alert-box h3 { margin: 0 0 0.5rem; font-family: var(--mono); font-size: 0.75rem; color: var(--red); text-transform: uppercase; letter-spacing: 0.05em; }
+  .alert-box ul { margin: 0; padding-left: 1.1rem; font-size: 0.83rem; line-height: 1.55; color: var(--text); }
+  .alert-box li + li { margin-top: 0.3rem; }
+  .result-line { display: flex; align-items: baseline; gap: 0.6rem; font-size: 0.85rem; padding: 0.35rem 0; border-bottom: 1px dashed var(--border); }
+  .result-line:last-child { border-bottom: none; }
+  .result-line b { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-mute); min-width: 6rem; }
+
+  footer { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); text-align: center; padding: 1rem 0 0; border-top: 1px solid var(--border); line-height: 1.7; }
+  footer a { color: var(--text-mute); }
+  a { color: var(--amber); }
+
+  /* Dataviz — diverging bar chart (Bourse) */
+  .chart-card { padding: 1.2rem 1.3rem 1.3rem; }
+  .viz-legend { display: flex; gap: 1.1rem; align-items: center; margin-bottom: 1rem; font-size: 0.78rem; color: var(--text-mute); }
+  .viz-legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .viz-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .divrow { display: grid; grid-template-columns: 8.5rem 1fr; align-items: center; gap: 0.75rem; padding: 0.4rem 0; }
+  .divrow + .divrow { border-top: 1px solid var(--border); }
+  .divlabel { font-size: 0.84rem; font-weight: 600; color: var(--text); text-align: right; }
+  .divtrack { position: relative; height: 22px; }
+  .divtrack .divbaseline { position: absolute; left: 50%; top: -6px; bottom: -6px; width: 1px; background: var(--border); }
+  .divbar { position: absolute; top: 3px; height: 16px; cursor: default; }
+  .divbar.neg { right: 50%; background: #e34948; border-radius: 4px 0 0 4px; }
+  .divbar.pos { left: 50%; background: #2a78d6; border-radius: 0 4px 4px 0; }
+  @media (prefers-color-scheme: dark) { .divbar.neg { background: #e66767; } .divbar.pos { background: #3987e5; } }
+  :root[data-theme="dark"] .divbar.neg { background: #e66767; }
+  :root[data-theme="dark"] .divbar.pos { background: #3987e5; }
+  :root[data-theme="light"] .divbar.neg { background: #e34948; }
+  :root[data-theme="light"] .divbar.pos { background: #2a78d6; }
+  .divval { position: absolute; top: 0; height: 22px; display: flex; align-items: center; font-family: var(--mono); font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+  .divval.neg { color: #c94430; right: calc(50% + 6px); text-align: right; justify-content: flex-end; }
+  .divval.pos { color: var(--green); left: calc(50% + 6px); }
+  .divbar[data-tip]:hover::after, .divbar[data-tip]:focus-visible::after {
+    content: attr(data-tip);
+    position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: var(--surface);
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 500;
+    padding: 0.3rem 0.55rem; border-radius: 6px; white-space: nowrap; z-index: 5;
+    box-shadow: var(--shadow);
+  }
+  .viz-axis-note { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.68rem; color: var(--text-mute); margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  .viz-table-wrap { margin-top: 1.1rem; overflow-x: auto; }
+  table.viz-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .viz-table caption { text-align: left; font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.4rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+  .viz-table th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-mute); font-weight: 600; padding: 0 0.6rem 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .viz-table td { padding: 0.5rem 0.6rem 0.5rem 0; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  .viz-table tr:last-child td { border-bottom: none; }
+  .viz-table td.num { text-align: right; font-family: var(--mono); }
+  .viz-table td.num.neg { color: #c94430; }
+  .viz-table td.num.pos { color: var(--green); }
+</style>
+
+<div class="app">
+  <div class="wrap">
+
+    <header class="header">
+      <div>
+        <p class="eyebrow">Radar-Vielle · claudioborlo/Radar-Vielle</p>
+        <h1>Radar de veille — Tableau de bord</h1>
+      </div>
+      <div class="header-meta">
+        Routine <b>radar-de-veille-quotidien</b><br>
+        Prochain run auto&nbsp;: <b>27/07/2026 · 07h07 Paris</b>
+      </div>
+    </header>
+
+    <div class="signal-card">
+      <div class="signal-head">
+        <p class="signal-eyebrow">🔔 Alerte déclenchée — Robot / Drone</p>
+        <span class="pill ok">✓ Déclencheur atteint</span>
+      </div>
+      <p class="signal-title">AndroMach prépare une levée de fonds pour son drone suborbital hypersonique</p>
+      <p class="signal-body">Déclencheur : annonce d'investissement (levée de fonds à venir) sur une entreprise française investissable, adossée à un soutien institutionnel — critère du sujet Robot/Drone de CLAUDE.md. AndroMach (fondée en 2023 par des ingénieurs de l'IPSA) prépare un tour de table via Souvtech Invest pour financer son drone réutilisable <b>Envol</b> (Mach 5, 200 km d'altitude, 30 kg de charge utile). La DGA a déjà financé une campagne d'essais réussie du moteur-fusée « Banger » (21 allumages, 7 min de combustion cumulée), et le CNES est également impliqué. Premier vol prototype visé 2026-2027, version opérationnelle 2028.</p>
+      <p class="signal-source">Source lue avec succès : <a href="https://www.opex360.com/2026/07/23/avec-lappui-du-cnes-et-de-la-dga-andromach-est-en-bonne-voie-de-faire-voler-un-drone-suborbital-hypersonique/" target="_blank" rel="noopener">opex360.com, 23/07/2026</a> · <a href="https://claude.ai/code/artifact/8ec3c247-559a-411f-a60f-3142afa5128d" target="_blank" rel="noopener">voir le tableau de bord Drone dédié →</a></p>
+    </div>
+
+    <section aria-labelledby="viz-title">
+      <div class="section-head">
+        <div>
+          <p class="section-title" id="viz-title">Graphique — Variation par valeur / indice (Bourse)</p>
+          <p class="section-sub">Écart en % — semaine du 21 au 25 juillet 2026 · <a href="https://claude.ai/code/artifact/88843bb0-623b-405f-8604-e304f73a17af" target="_blank" rel="noopener">voir le tableau de bord Bourse dédié</a></p>
+        </div>
+      </div>
+      <div class="card chart-card">
+        <div class="viz-legend">
+          <span class="viz-legend-item"><span class="viz-swatch" style="background:#e34948;"></span>Baisse</span>
+          <span class="viz-legend-item"><span class="viz-swatch" style="background:#2a78d6;"></span>Hausse</span>
+        </div>
+        <div id="viz-chart"></div>
+        <div class="viz-axis-note"><span>-8 %</span><span>0</span><span>+8 %</span></div>
+        <div class="viz-table-wrap">
+          <table class="viz-table">
+            <caption>Vue tableau (accessibilité)</caption>
+            <thead><tr><th>Valeur / indice</th><th style="text-align:right;">Variation</th></tr></thead>
+            <tbody id="viz-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="signal-card">
+      <div class="signal-head">
+        <p class="signal-eyebrow">🔔 Alerte déclenchée — Tech / IA / IT</p>
+        <span class="pill ok">✓ Rupture technologique</span>
+      </div>
+      <p class="signal-title">Anthropic lance Claude Opus 5 : saut de capacité, pas une mise à jour incrémentale</p>
+      <p class="signal-body">Déclencheur : nouveau modèle avec rupture de capacité (pas une mise à jour mineure). Lancé le 24/07/2026, Opus 5 double les performances d'Opus 4.8 en ingénierie logicielle à prix inchangé, obtient un score trois fois supérieur au meilleur concurrent sur ARC-AGI 3 (résolution de problèmes inédits), et progresse nettement en sciences de la vie (chimie organique, analyse de protéines). Il introduit un mode « effort » ajustable et des comportements agentiques inédits (construction de ses propres systèmes de validation en cours de tâche).</p>
+      <p class="signal-source">Source lue avec succès : <a href="https://www.anthropic.com/news/claude-opus-5" target="_blank" rel="noopener">anthropic.com, 24/07/2026</a> · 2 sources candidates écartées (403 / non pertinente), conformément à la règle absolue</p>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-head">
+        <p class="signal-eyebrow">🔔 Alerte déclenchée — Climat</p>
+        <span class="pill ok">✓ Événement à impact économique</span>
+      </div>
+      <p class="signal-title">Sécheresse historique : récoltes françaises de blé et maïs 2026 en net repli</p>
+      <p class="signal-body">Déclencheur : événement climatique à impact économique/boursier identifiable. Trois épisodes caniculaires en deux mois et le printemps le plus chaud jamais enregistré (nappes phréatiques à -54%) ont provoqué une sécheresse exceptionnelle : au 24/07/2026, 58 départements sont en crise et 23 en alerte renforcée (VigiEau), avec restrictions d'irrigation. La récolte de blé tendre recule de 7,6% sur un an (30,8 Mt), et celle de maïs chute d'au moins 30%, à son plus bas niveau depuis 26 ans — volatilité anticipée sur les matières premières agricoles.</p>
+      <p class="signal-source">Sources lues avec succès : <a href="https://www.boursorama.com/actualite-economique/actualites-amp/impact-des-canicules-sur-l-agriculture-francaise-la-recolte-2026-de-ble-nettement-en-dessous-des-attentes-alerte-sur-le-mais-0b0f4fb09ce7b60e0f7d3a4ab9f0388b" target="_blank" rel="noopener">Boursorama</a> · <a href="https://www.reussir.fr/secheresse-2026-quels-departements-affichent-deja-des-restrictions-deau-pour-les-activites" target="_blank" rel="noopener">Réussir</a></p>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-head">
+        <p class="signal-eyebrow">🔔 Alerte déclenchée — Matières premières</p>
+        <span class="pill ok">✓ Déclencheur atteint (or, ≥2%)</span>
+      </div>
+      <p class="signal-title">L'or recule sous la pression d'une Fed durablement restrictive et des tensions Moyen-Orient</p>
+      <p class="signal-body">Déclencheur : variation ≥2% liée à un facteur géopolitique. L'or a chuté de près de 2% le 23/07/2026, à 4 030-4 050 $/once, suite à l'escalade au Moyen-Orient (frappes américaines en Iran, attaques houthies contre des pétroliers saoudiens) qui a fait bondir le Brent au-dessus de 100 $/baril — renforçant les anticipations de taux durablement élevés (Fed, ~80% de probabilité de hausse en septembre), un contexte défavorable à l'or, actif non rémunéré. Le cuivre n'atteint pas le seuil aujourd'hui (-0,06% quotidien).</p>
+      <div class="kpi-row">
+        <div class="kpi"><p class="kpi-label">Or</p><p class="kpi-value">~4 052 $/once</p></div>
+        <div class="kpi"><p class="kpi-label">Cuivre</p><p class="kpi-value">~6,30 $/livre</p></div>
+      </div>
+      <p class="signal-source">Sources lues avec succès : <a href="https://tradingeconomics.com/commodity/gold" target="_blank" rel="noopener">Trading Economics — Gold</a> · <a href="https://tradingeconomics.com/commodity/copper" target="_blank" rel="noopener">Trading Economics — Copper</a></p>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-head">
+        <p class="signal-eyebrow">🔔 Alerte déclenchée — Immobilier Paris</p>
+        <span class="pill ok">✓ Tendance actionnable</span>
+      </div>
+      <p class="signal-title">Paris : inflexion à la hausse confirmée après plusieurs années de correction</p>
+      <p class="signal-body">Déclencheur : tendance de marché actionnable. Selon les Notaires de France, les prix des appartements anciens à Paris progressent de +1% sur un an au 1ᵉʳ trimestre 2026, portés par une hausse en Île-de-France pour le troisième trimestre consécutif (+0,6%). Ce signal marque une possible sortie de la phase de correction entamée depuis le pic de 2020-2021 (le prix moyen reste toutefois en baisse de -5,3% sur deux ans selon les données DVF) — un début de stabilisation à surveiller de près pour une optique de revente profitable.</p>
+      <div class="kpi-row">
+        <div class="kpi"><p class="kpi-label">Prix moyen / m²</p><p class="kpi-value">~9 800 €</p></div>
+        <div class="kpi"><p class="kpi-label">Variation 1 an</p><p class="kpi-value">+1 %</p></div>
+        <div class="kpi"><p class="kpi-label">Variation 2 ans</p><p class="kpi-value">-5,3 %</p></div>
+      </div>
+      <p class="signal-source">Sources lues avec succès : <a href="https://www.notaires.fr/fr/article/tendances-et-evolutions-des-prix-de-limmobilier-au-1er-trimestre-2026" target="_blank" rel="noopener">Notaires de France</a> · <a href="https://blog.qoridor.fr/prix-immobilier/paris/" target="_blank" rel="noopener">Qoridor</a></p>
+    </div>
+
+    <section aria-labelledby="pipeline-title">
+      <div class="section-head">
+        <div>
+          <p class="section-title" id="pipeline-title">Pipeline BMAD</p>
+          <p class="section-sub">Analyst → PM → Architect → PO/SM → Dev → QA</p>
+        </div>
+      </div>
+      <div class="pipeline">
+        <div class="stage" data-state="done">
+          <p class="stage-name">01 · Analyst</p>
+          <p class="stage-role">Project Brief</p>
+          <span class="stage-state"><span class="dot"></span>Terminé</span>
+        </div>
+        <div class="stage" data-state="done">
+          <p class="stage-name">02 · PM</p>
+          <p class="stage-role">PRD</p>
+          <span class="stage-state"><span class="dot"></span>Validé</span>
+        </div>
+        <div class="stage" data-state="done">
+          <p class="stage-name">03 · Architect</p>
+          <p class="stage-role">Architecture</p>
+          <span class="stage-state"><span class="dot"></span>Validé</span>
+        </div>
+        <div class="stage" data-state="done">
+          <p class="stage-name">04 · PO/SM</p>
+          <p class="stage-role">Sharding</p>
+          <span class="stage-state"><span class="dot"></span>6 epics</span>
+        </div>
+        <div class="stage" data-state="done">
+          <p class="stage-name">05 · Dev</p>
+          <p class="stage-role">Implémentation</p>
+          <span class="stage-state"><span class="dot"></span>Run quotidien réel validé</span>
+        </div>
+        <div class="stage" data-state="done">
+          <p class="stage-name">06 · QA</p>
+          <p class="stage-role">Revue</p>
+          <span class="stage-state"><span class="dot"></span>2 blocages résolus</span>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="routine-title">
+      <div class="section-head">
+        <div>
+          <p class="section-title" id="routine-title">Automatisation — Story A1</p>
+          <p class="section-sub">Routine cloud, exécution quotidienne</p>
+        </div>
+        <span class="pill ok">✓ Opérationnelle</span>
+      </div>
+      <div class="card routine-card">
+        <div>
+          <p class="stat-label">Fréquence</p>
+          <p class="stat-value">0 5 * * * <span style="color:var(--text-mute); font-weight:500;">(UTC)</span></p>
+        </div>
+        <div>
+          <p class="stat-label">Heure locale visée</p>
+          <p class="stat-value">7h00 Paris <span style="color:var(--text-mute); font-weight:500;">(dérive à 8h en hiver)</span></p>
+        </div>
+        <div>
+          <p class="stat-label">Politique de merge</p>
+          <p class="stat-value small">Automatique — la routine merge sa propre PR</p>
+        </div>
+        <div>
+          <p class="stat-label">Run quotidien réel</p>
+          <p class="stat-value small" style="color:var(--green);">✓ 26/07/2026 — <a href="https://github.com/claudioborlo/Radar-Vielle/pull/7" target="_blank" rel="noopener">PR #7</a> mergée automatiquement</p>
+        </div>
+      </div>
+      <div class="alert-box" style="border-color:var(--green); background:var(--green-bg);">
+        <h3 style="color:var(--green);">✓ Radar de veille pleinement opérationnel en production</h3>
+        <ul>
+          <li><b style="font-family:var(--mono); color:var(--text);">Premier run quotidien complet</b> — <code>digests/2026-07-26.md</code> produit et mergé sans aucune intervention manuelle, conformément à NFR1.</li>
+          <li><b style="font-family:var(--mono); color:var(--text);">Format conforme</b> — 7 sujets (Cryptomonnaies ajoutée le 26/07), "Rien à signaler aujourd'hui" utilisé correctement quand aucun seuil n'est atteint, section "Sources inaccessibles" présente.</li>
+          <li><b style="font-family:var(--mono); color:var(--text);">Règle absolue</b> — respectée : washingtonpost.com, cnbc.com, openai.com, usinenouvelle.com (403/503) écartés sans être résumés, remplacés par des sources alternatives lues avec succès.</li>
+        </ul>
+      </div>
+      <p class="status-note">Le radar tourne désormais en autonomie complète : exécution quotidienne à 7h Paris (dérive à 8h en hiver), écriture dans <code>digests/</code>, merge automatique. Console : <a href="https://claude.ai/code/routines/trig_01KgVExpAgQPhH4hnLDScBsF" target="_blank" rel="noopener">console de la routine</a>.</p>
+    </section>
+
+    <section aria-labelledby="drone-title">
+      <div class="section-head">
+        <div>
+          <p class="section-title" id="drone-title">Focus test — Sujet Drone</p>
+          <p class="section-sub">Résultat réel du test technique (avant restauration du prompt complet) · <a href="https://claude.ai/code/artifact/8ec3c247-559a-411f-a60f-3142afa5128d" target="_blank" rel="noopener">voir le tableau de bord Drone dédié</a></p>
+        </div>
+        <span class="pill ok">✓ Réussi</span>
+      </div>
+      <div class="card focus-card">
+        <div class="focus-banner">
+          <p>Résultat : <b><a href="https://github.com/claudioborlo/Radar-Vielle/pull/1" target="_blank" rel="noopener">Pull request #1</a></b> ouverte avec <b>digests/_test-drone.md</b></p>
+        </div>
+        <div style="margin-bottom:1.1rem;">
+          <div class="result-line"><b>Recherche</b> <span class="pill ok">✓ OK</span> <span style="color:var(--text-mute); font-size:0.82rem;">WebSearch fonctionnel, candidats pertinents trouvés</span></div>
+          <div class="result-line"><b>Lecture</b> <span class="pill ok">✓ 1/2</span> <span style="color:var(--text-mute); font-size:0.82rem;">opex360.com lu avec succès ; 1 autre source restée en 403, correctement écartée</span></div>
+          <div class="result-line"><b>Écriture</b> <span class="pill ok">✓ OK</span> <span style="color:var(--text-mute); font-size:0.82rem;">Digest rédigé avec la source réelle + mention de la source écartée (règle absolue respectée)</span></div>
+          <div class="result-line"><b>Commit</b> <span class="pill ok">✓ OK</span> <span style="color:var(--text-mute); font-size:0.82rem;">"Test technique — sujet Drone"</span></div>
+          <div class="result-line"><b>Push / PR</b> <span class="pill ok">✓ OK</span> <span style="color:var(--text-mute); font-size:0.82rem;"><a href="https://github.com/claudioborlo/Radar-Vielle/pull/1" target="_blank" rel="noopener">PR #1</a> ouverte puis mergée dans main</span></div>
+        </div>
+        <p class="section-sub" style="margin-bottom:0.5rem;">Contenu réel identifié :</p>
+        <div class="sources-wrap">
+          <table class="sources-table">
+            <thead>
+              <tr><th>Piste identifiée</th><th>Statut lecture</th><th>Note</th></tr>
+            </thead>
+            <tbody id="drone-sources"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="subjects-title">
+      <div class="section-head">
+        <div>
+          <p class="section-title" id="subjects-title">Sujets suivis</p>
+          <p class="section-sub">7 sujets définis dans CLAUDE.md — statut du jour</p>
+        </div>
+      </div>
+      <div class="subjects" id="subjects"></div>
+    </section>
+
+    <section aria-labelledby="digest-title">
+      <div class="section-head">
+        <div>
+          <p class="section-title" id="digest-title">Digest du jour</p>
+          <p class="section-sub">Premier run quotidien réel — <a href="https://github.com/claudioborlo/Radar-Vielle/blob/main/digests/2026-07-26.md" target="_blank" rel="noopener">voir sur GitHub</a></p>
+        </div>
+      </div>
+      <div class="card digest-panel">
+        <div class="digest-head">
+          <div class="digest-head-inner">
+            <span class="stat-value small" style="font-family:var(--mono);">digests/2026-07-26.md</span>
+            <span class="pill ok">✓ Publié</span>
+          </div>
+        </div>
+        <div id="digest-body" style="padding:1.1rem 1.25rem 1.3rem; font-size:0.86rem; line-height:1.65;"></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="validation-title">
+      <div class="section-head">
+        <div>
+          <p class="section-title" id="validation-title">Validation des stories</p>
+          <p class="section-sub">Coche chaque critère en relisant le digest réel — testable visuellement, sauvegardé dans ce navigateur</p>
+        </div>
+      </div>
+      <div class="epics" id="epics"></div>
+    </section>
+
+    <section aria-labelledby="allsources-title">
+      <div class="section-head">
+        <div>
+          <p class="section-title" id="allsources-title">Sources & bases de données collectées</p>
+          <p class="section-sub">Toutes les sources effectivement consultées depuis le début du projet, par sujet — cumul des tests et du run quotidien réel</p>
+        </div>
+        <span class="pill ok" id="allsources-count"></span>
+      </div>
+      <div class="card" style="padding:1.1rem 1.25rem 1.25rem;">
+        <div class="sources-wrap">
+          <table class="sources-table" style="min-width:44rem;">
+            <thead>
+              <tr><th>Sujet</th><th>Source</th><th>Type</th><th>Statut</th></tr>
+            </thead>
+            <tbody id="allsources-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      CLAUDE.md · JOURNAL.md · docs/prd.md · docs/architecture.md · docs/stories/ — github.com/claudioborlo/Radar-Vielle
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  var vizData = [
+    { name: "Intel", value: -7.88, tip: "Intel : -7,88 % malgré des résultats supérieurs aux attentes" },
+    { name: "Alphabet", value: -7.1, tip: "Alphabet : -7,1 % (~300 Md$ de capitalisation effacés)" },
+    { name: "SOXX (semi-conducteurs)", value: -4.0, tip: "SOXX : plus de -4 % (craintes sur la demande IA)", approx: true },
+    { name: "Nasdaq 100", value: -1.27, tip: "Nasdaq 100 : -1,27 %" },
+    { name: "S&P 500", value: -0.08, tip: "S&P 500 : -0,08 %" },
+    { name: "Dow Jones", value: 0.39, tip: "Dow Jones : +0,39 %" }
+  ];
+  var vizScale = 8;
+  var vizChart = document.getElementById("viz-chart");
+  var vizTbody = document.getElementById("viz-table-body");
+  vizData.forEach(function (d) {
+    var isPos = d.value >= 0;
+    var pct = Math.min(Math.abs(d.value) / vizScale * 100, 100);
+    var valText = (d.approx ? "> " : "") + (isPos ? "+" : "") + d.value.toFixed(2).replace(".", ",") + " %";
+
+    var row = document.createElement("div");
+    row.className = "divrow";
+    row.innerHTML = '<div class="divlabel">' + d.name + '</div>';
+
+    var track = document.createElement("div");
+    track.className = "divtrack";
+    track.innerHTML = '<div class="divbaseline"></div>';
+
+    var bar = document.createElement("div");
+    bar.className = "divbar " + (isPos ? "pos" : "neg");
+    bar.style.width = pct + "%";
+    bar.setAttribute("data-tip", d.tip);
+    bar.tabIndex = 0;
+    track.appendChild(bar);
+
+    var val = document.createElement("div");
+    val.className = "divval " + (isPos ? "pos" : "neg");
+    val.textContent = valText;
+    track.appendChild(val);
+
+    row.appendChild(track);
+    vizChart.appendChild(row);
+
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + d.name + "</td><td class=\"num " + (isPos ? "pos" : "neg") + "\">" + valText + "</td>";
+    vizTbody.appendChild(tr);
+  });
+
+  var allSources = [
+    { subject: "Bourse", name: "Boursorama", type: "Presse spécialisée", status: "ok" },
+    { subject: "Bourse", name: "Zonebourse", type: "Presse spécialisée", status: "ok" },
+    { subject: "Bourse", name: "BCE (ecb.europa.eu)", type: "Source officielle", status: "ok" },
+    { subject: "Bourse", name: "ts2.tech", type: "Presse spécialisée", status: "ok" },
+    { subject: "Bourse", name: "Yahoo Finance", type: "Presse financière", status: "mixed", note: "lue le 25/07, inaccessible (503) le 26/07" },
+    { subject: "Bourse", name: "Washington Post", type: "Presse généraliste", status: "fail", note: "403 — écartée" },
+    { subject: "Bourse", name: "CNBC", type: "Presse financière", status: "fail", note: "403 — écartée" },
+    { subject: "Tech / IA / IT", name: "Anthropic (anthropic.com)", type: "Source officielle", status: "ok" },
+    { subject: "Tech / IA / IT", name: "Stratechery", type: "Presse spécialisée", status: "mixed", note: "lue mais non pertinente (contenu daté/incrémental)" },
+    { subject: "Tech / IA / IT", name: "Ars Technica", type: "Presse spécialisée", status: "fail", note: "échec de récupération" },
+    { subject: "Tech / IA / IT", name: "OpenAI (openai.com/news)", type: "Source officielle", status: "fail", note: "403 — écartée" },
+    { subject: "Robot / Drone", name: "opex360.com (Zone Militaire)", type: "Presse spécialisée défense", status: "ok" },
+    { subject: "Robot / Drone", name: "Valeo (valeo.com)", type: "Source officielle (entreprise)", status: "ok" },
+    { subject: "Robot / Drone", name: "DGA (defense.gouv.fr)", type: "Source officielle", status: "ok" },
+    { subject: "Robot / Drone", name: "Usine Nouvelle", type: "Presse spécialisée", status: "fail", note: "403 — écartée" },
+    { subject: "Robot / Drone", name: "Usine Digitale", type: "Presse spécialisée", status: "fail", note: "403 — écartée" },
+    { subject: "Robot / Drone", name: "Investing.com", type: "Données de marché", status: "ok", note: "ajoutée aux sources du sujet le 26/07 (cours Rheinmetall, Leonardo, Embention)" },
+    { subject: "Climat", name: "Boursorama", type: "Presse spécialisée", status: "ok" },
+    { subject: "Climat", name: "Réussir (reussir.fr)", type: "Presse spécialisée agricole", status: "ok" },
+    { subject: "Climat", name: "Indexbox", type: "Presse spécialisée", status: "ok" },
+    { subject: "Climat", name: "Asuene", type: "Presse spécialisée", status: "ok" },
+    { subject: "Matières premières", name: "Trading Economics — Gold", type: "Données de marché", status: "ok" },
+    { subject: "Matières premières", name: "Trading Economics — Copper", type: "Données de marché", status: "ok" },
+    { subject: "Matières premières", name: "Oilprice.com", type: "Presse spécialisée énergie", status: "ok" },
+    { subject: "Matières premières", name: "FX Leaders", type: "Presse financière", status: "ok" },
+    { subject: "Matières premières", name: "Kitco", type: "Données de marché", status: "ok" },
+    { subject: "Matières premières", name: "Yahoo Finance", type: "Presse financière", status: "fail", note: "503 — écartée (26/07)" },
+    { subject: "Matières premières", name: "CNBC", type: "Presse financière", status: "fail", note: "403 — écartée (26/07)" },
+    { subject: "Immobilier Paris", name: "Notaires de France / Paris-IDF", type: "Source officielle", status: "ok" },
+    { subject: "Immobilier Paris", name: "Qoridor (blog.qoridor.fr)", type: "Presse spécialisée", status: "ok" },
+    { subject: "Immobilier Paris", name: "MeilleursAgents", type: "Presse spécialisée", status: "fail", note: "403 — écartée" },
+    { subject: "Cryptomonnaies", name: "CoinDesk", type: "Presse spécialisée", status: "ok" },
+    { subject: "Cryptomonnaies", name: "Zonebourse (cryptomonnaies)", type: "Données de marché", status: "ok" }
+  ];
+  var allSourcesBody = document.getElementById("allsources-body");
+  var okCount = allSources.filter(function (s) { return s.status === "ok" || s.status === "mixed"; }).length;
+  document.getElementById("allsources-count").textContent = "✓ " + okCount + " sources lues, " + (allSources.length - okCount) + " inaccessibles";
+  var statusLabels = { ok: '<span class="pill ok">✓ Lue</span>', fail: '<span class="pill fail">✕ Inaccessible</span>', mixed: '<span class="pill wait">◐ Mixte</span>' };
+  allSources.forEach(function (s) {
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td class=\"source-type\">" + s.subject + "</td>" +
+      "<td class=\"source-name\">" + s.name + "</td>" +
+      "<td class=\"source-type\">" + s.type + "</td>" +
+      "<td>" + statusLabels[s.status] + (s.note ? '<div class="source-note">' + s.note + '</div>' : '') + "</td>";
+    allSourcesBody.appendChild(tr);
+  });
+
+  var digestBody = document.getElementById("digest-body");
+  var digestSections = [
+    { title: "Bourse", html: "Le Nasdaq a chuté de 2,15% jeudi 23 juillet (-553 pts, à 25 137,69 pts), entraîné par des résultats tech décevants (Tesla -14,5%, Alphabet -7%) et la flambée du Brent au-dessus de 100$ (tensions en mer Rouge). Rebond partiel vendredi en Europe (CAC 40 +0,88%) ; la BCE a maintenu ses taux inchangés le 23/07 (refi 2,40%, dépôt 2,25%). Sources : <a href=\"https://www.boursorama.com/bourse/actualites/wall-street-finit-en-baisse-tech-et-petrole-preoccupent-838b66c4852846c5746f004f33a99ae8\" target=\"_blank\" rel=\"noopener\">Boursorama</a>, <a href=\"https://www.zonebourse.com/actualite-bourse/cac-40-la-bourse-de-paris-cloture-la-semaine-sur-une-note-positive-ce7f51dfde8af722\" target=\"_blank\" rel=\"noopener\">Zonebourse</a>, <a href=\"https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260723~29f24d99bc.fr.html\" target=\"_blank\" rel=\"noopener\">BCE</a>." },
+    { title: "Tech / IA / IT", html: "Anthropic a lancé Claude Opus 5 le 24 juillet, un modèle qui triple la performance du meilleur concurrent sur ARC-AGI-3 et coûte deux fois moins cher qu'un flagship équivalent — un saut de génération plutôt qu'une mise à jour incrémentale. Source : <a href=\"https://www.anthropic.com/news/claude-opus-5\" target=\"_blank\" rel=\"noopener\">Anthropic</a>." },
+    { title: "Robot / Drone", html: "Valeo a annoncé le 20/07 un partenariat avec Harmattan AI pour produire en France, dès 2027, un moteur électrique souverain pour drones — 1ᵉʳ contrat de Valeo dans ce secteur. Harmattan AI a aussi été commanditée par la DGA le 28/05 pour 5 000 drones Delco supplémentaires. Sources : <a href=\"https://www.valeo.com/en/valeo-has-been-selected-by-harmattan-ai-to-develop-and-produce-in-france-a-sovereign-electric-drone-motor/\" target=\"_blank\" rel=\"noopener\">Valeo</a>, <a href=\"https://www.defense.gouv.fr/dga/actualites/dga-commande-5-000-drones-du-combattant-delco-larmee-terre\" target=\"_blank\" rel=\"noopener\">DGA</a>." },
+    { title: "Climat", html: "La Commission européenne a dévoilé le 17/07 une réforme du marché carbone (EU ETS) pour 2031-2040, avec une nouvelle Banque de décarbonation industrielle dotée de 100 Md€ — le prix de la tonne carbone (EUA) est monté jusqu'à 82 €/t début juillet, avec un impact identifiable sur les secteurs énergo-intensifs européens. Sources : <a href=\"https://www.indexbox.io/blog/european-carbon-prices-fluctuate-in-july-2026-ahead-of-ets-reform/\" target=\"_blank\" rel=\"noopener\">Indexbox</a>, <a href=\"https://asuene.com/us/blog/eu-ets-reform-2026-what-the-july-17-proposal-means-for-cbam-importers-and-carbon-costs\" target=\"_blank\" rel=\"noopener\">Asuene</a>." },
+    { title: "Matières premières", html: "Le Brent a grimpé de +4,21% à 98,03$ et le WTI de +3,16% à 89,57$ le 23/07, franchissant les 100$/baril pour la première fois depuis mai, après des attaques houthies contre deux pétroliers saoudiens. L'or (4 051,70$, +0,08%) et le cuivre (6,30$/lb, -0,06%) restent sous le seuil de 2%. Sources : <a href=\"https://oilprice.com/Energy/Oil-Prices/Oil-Prices-Climb-Toward-100-as-Red-Sea-Risks-Rise.html\" target=\"_blank\" rel=\"noopener\">Oilprice.com</a>, <a href=\"https://www.fxleaders.com/news/2026/07/24/gold-price-forecast-july-24-2026-dollar4028-defends-dollar4000-as-brent-hits-dollar100-and-september-hike-odds-jump-to-80/\" target=\"_blank\" rel=\"noopener\">FX Leaders</a>, <a href=\"https://www.kitco.com/price/precious-metals\" target=\"_blank\" rel=\"noopener\">Kitco</a>." },
+    { title: "Marché immobilier (Paris)", html: "<i>Rien à signaler aujourd'hui.</i> Prix des appartements à Paris intra-muros stable à 9 580 €/m² (+0,9% sur un an) ; aucune variation n'atteint le seuil de 2% et aucune tendance clairement actionnable n'est identifiée. Sources : <a href=\"https://paris.notaires.fr/fr/presse/communication-immobiliere-mensuelle/conjoncture-immobiliere-francilienne-en-fevrier-2026\" target=\"_blank\" rel=\"noopener\">Notaires de Paris/IDF</a>." },
+    { title: "Cryptomonnaies", html: "<i>Rien à signaler aujourd'hui.</i> Bitcoin à 64 322,24$ (+0,51% / 24h) et Ethereum à 1 878$ (-2,38% / 24h) — sous le seuil dédié de 5% en 24h, aucune décision réglementaire majeure identifiée. Sujet ajouté au radar le 26/07/2026." }
+  ];
+  digestSections.forEach(function (s) {
+    var block = document.createElement("div");
+    block.style.marginBottom = "1rem";
+    block.innerHTML = '<p style="font-weight:700; margin:0 0 0.3rem;">' + s.title + '</p><p style="margin:0; color:var(--text-mute);">' + s.html + '</p>';
+    digestBody.appendChild(block);
+  });
+  var srcNote = document.createElement("p");
+  srcNote.style.cssText = "margin-top:1rem; padding-top:0.8rem; border-top:1px solid var(--border); font-size:0.78rem; color:var(--text-mute);";
+  srcNote.innerHTML = '<b style="color:var(--text);">Sources inaccessibles aujourd\'hui :</b> washingtonpost.com, cnbc.com, finance.yahoo.com, openai.com/news, usinenouvelle.com (403/503) — écartées sans être résumées, conformément à la règle absolue.';
+  digestBody.appendChild(srcNote);
+
+  var droneSources = [
+    { name: "AndroMach — levée de fonds via Souvtech Invest, drone suborbital hypersonique Envol, soutien DGA/CNES", status: "ok", note: "Lu : opex360.com, 23/07/2026" },
+    { name: "Pépite bordelaise — drones à bas coût, levée de fonds en préparation", status: "fail", note: "Usine Nouvelle — inaccessible (403), écartée sans être résumée" }
+  ];
+  var droneSourcesEl = document.getElementById("drone-sources");
+  droneSources.forEach(function (s) {
+    var tr = document.createElement("tr");
+    var label = s.status === "ok" ? "✓ Lue" : "✕ Inaccessible";
+    tr.innerHTML =
+      '<td class="source-name">' + s.name + "</td>" +
+      '<td><span class="pill ' + s.status + '">' + label + "</span></td>" +
+      '<td class="source-note">' + s.note + "</td>";
+    droneSourcesEl.appendChild(tr);
+  });
+
+  var subjects = [
+    { n: "01", name: "Bourse", angle: "Suivi macro des marchés actions, focus sectoriel IT/tech.", trigger: "Mouvement de marché significatif ou variation ≥ 2% sur indices/valeurs suivis." },
+    { n: "02", name: "Tech / IA / IT", angle: "Produits et avancées en intelligence artificielle.", trigger: "Rupture technologique ou avancée majeure — pas les mises à jour mineures." },
+    { n: "03", name: "Robot / Drone", angle: "Opportunités d'investissement françaises, y compris défense.", trigger: "Investissement, levée de fonds, contrat majeur impactant une entreprise investissable." },
+    { n: "04", name: "Climat", angle: "Science, politique publique et impact économique, lus via prisme boursier.", trigger: "Décision de politique publique ou événement climatique à impact économique identifiable." },
+    { n: "05", name: "Matières premières", angle: "Suivi investissement or, cuivre, autres.", trigger: "Variation de prix ≥ 2% liée à un facteur géopolitique identifiable." },
+    { n: "06", name: "Immobilier Paris", angle: "Prix des appartements à Paris, optique revente profitable.", trigger: "Variation significative des prix (notaires/INSEE) ou tendance actionnable." },
+    { n: "07", name: "Cryptomonnaies", angle: "Bitcoin, Ethereum — investissement + actualité réglementaire.", trigger: "Variation ≥ 5% en 24h sur BTC/ETH, ou décision réglementaire majeure (UE/MiCA, USA/SEC)." }
+  ];
+
+  var subjectsEl = document.getElementById("subjects");
+  subjects.forEach(function (s) {
+    var el = document.createElement("div");
+    el.className = "card subject";
+    var tested = { "Bourse": "PR #2", "Tech / IA / IT": "PR #5", "Robot / Drone": "PR #1", "Climat": "PR #4", "Matières premières": "PR #3", "Immobilier Paris": "PR #6" };
+    var pill = tested[s.name]
+      ? '<span class="pill ok" style="align-self:flex-start;">✓ Test réussi (' + tested[s.name] + ')</span>'
+      : '<span class="pill wait" style="align-self:flex-start;">◌ En attente du 1er run avec ce sujet</span>';
+    el.innerHTML =
+      '<div class="subject-top"><p class="subject-name">' + s.name + '</p><span class="subject-num">' + s.n + '</span></div>' +
+      '<p class="subject-angle">' + s.angle + '</p>' +
+      '<p class="subject-trigger"><b>Déclencheur</b>' + s.trigger + '</p>' +
+      pill;
+    subjectsEl.appendChild(el);
+  });
+
+  var epics = [
+    { id: "b1", title: "Epic B · Story B1 — Collecte & validation", items: [
+      "Chaque sujet cite une source effectivement récupérée (pas de résumé sur titre/snippet seul)",
+      "Une source inaccessible est signalée explicitement, jamais résumée (règle absolue)",
+      "Sources conformes aux zones (FR/Europe/Chine/USA) et langues (FR/EN/IT)",
+      "Aucune source payante utilisée"
+    ]},
+    { id: "c1", title: "Epic C · Story C1 — Génération du digest", items: [
+      "Un bloc par sujet, 7 au total, dans l'ordre de CLAUDE.md",
+      "Sujet sans déclencheur → \"Rien à signaler aujourd'hui.\" (pas d'omission)",
+      "Sujet avec déclencheur → 3-4 lignes max, tendance + explication",
+      "Date du jour en titre du fichier",
+      "Sources inaccessibles listées à part si applicable"
+    ]},
+    { id: "d1", title: "Epic D · Story D1 — Historisation", items: [
+      "Nouveau fichier digests/YYYY-MM-DD.md à chaque run",
+      "Aucun digest précédent modifié ou supprimé",
+      "Commit poussé sur main, ou PR ouverte si le push échoue"
+    ]}
+  ];
+
+  var STORAGE_KEY = "radar-veille-checklist-v1";
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch (e) { saved = {}; }
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch (e) {}
+  }
+
+  var epicsEl = document.getElementById("epics");
+  epics.forEach(function (epic) {
+    var card = document.createElement("div");
+    card.className = "card epic-card";
+
+    var list = document.createElement("ul");
+    list.className = "checklist";
+
+    epic.items.forEach(function (text, i) {
+      var key = epic.id + "-" + i;
+      var li = document.createElement("li");
+      var checked = !!saved[key];
+      li.innerHTML = '<input type="checkbox" ' + (checked ? "checked" : "") + ' id="' + key + '"><span class="' + (checked ? "done" : "") + '">' + text + "</span>";
+      list.appendChild(li);
+
+      var input = li.querySelector("input");
+      var span = li.querySelector("span");
+      function toggle() {
+        saved[key] = input.checked;
+        span.className = input.checked ? "done" : "";
+        save();
+        updateProgress();
+      }
+      input.addEventListener("change", toggle);
+      li.addEventListener("click", function (e) {
+        if (e.target !== input) { input.checked = !input.checked; toggle(); }
+      });
+    });
+
+    var track = document.createElement("div");
+    track.className = "progress-track";
+    var fill = document.createElement("div");
+    fill.className = "progress-fill";
+    track.appendChild(fill);
+
+    var count = document.createElement("span");
+    count.className = "epic-count";
+
+    var head = document.createElement("div");
+    head.className = "epic-head";
+    head.innerHTML = '<p class="epic-title">' + epic.title + "</p>";
+    head.appendChild(count);
+
+    card.appendChild(head);
+    card.appendChild(list);
+    card.appendChild(track);
+    epicsEl.appendChild(card);
+
+    function updateProgress() {
+      var total = epic.items.length;
+      var doneCount = epic.items.filter(function (_, i) { return !!saved[epic.id + "-" + i]; }).length;
+      fill.style.width = (total ? (doneCount / total * 100) : 0) + "%";
+      count.textContent = doneCount + " / " + total;
+    }
+    updateProgress();
+  });
+})();
+</script>

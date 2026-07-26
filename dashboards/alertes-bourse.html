@@ -1,0 +1,241 @@
+<title>Radar de veille — Alertes Bourse</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --page:      #f9f9f7;
+    --surface:   #fcfcfb;
+    --text-1:    #0b0b0b;
+    --text-2:    #52514e;
+    --text-mute: #898781;
+    --grid:      #e1e0d9;
+    --baseline:  #c3c2b7;
+    --border:    rgba(11,11,11,0.10);
+    --shadow:    0 1px 2px rgba(11,11,11,0.06), 0 8px 24px rgba(11,11,11,0.05);
+    --blue:      #2a78d6;
+    --blue-wash: rgba(42,120,214,0.10);
+    --red:       #e34948;
+    --red-wash:  rgba(227,73,72,0.10);
+    --amber:     #c9791a;
+    --amber-bg:  #fbeed9;
+    --good:      #006300;
+    --critical:  #d03b3b;
+    --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19;
+      --text-1: #ffffff; --text-2: #c3c2b7; --text-mute: #898781;
+      --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+      --blue: #3987e5; --blue-wash: rgba(57,135,229,0.14);
+      --red: #e66767; --red-wash: rgba(230,103,103,0.14);
+      --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+      --good: #0ca30c; --critical: #d03b3b;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19;
+    --text-1: #ffffff; --text-2: #c3c2b7; --text-mute: #898781;
+    --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+    --blue: #3987e5; --blue-wash: rgba(57,135,229,0.14);
+    --red: #e66767; --red-wash: rgba(230,103,103,0.14);
+    --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+    --good: #0ca30c; --critical: #d03b3b;
+  }
+  :root[data-theme="light"] .viz-root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb;
+    --text-1: #0b0b0b; --text-2: #52514e; --text-mute: #898781;
+    --grid: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --shadow: 0 1px 2px rgba(11,11,11,0.06), 0 8px 24px rgba(11,11,11,0.05);
+    --blue: #2a78d6; --blue-wash: rgba(42,120,214,0.10);
+    --red: #e34948; --red-wash: rgba(227,73,72,0.10);
+    --amber: #c9791a; --amber-bg: #fbeed9;
+    --good: #006300; --critical: #d03b3b;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .viz-root {
+    background: var(--page);
+    color: var(--text-1);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: clamp(1rem, 3vw, 2.5rem);
+  }
+  .wrap { max-width: 60rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .header { border-bottom: 1px solid var(--border); padding-bottom: 1.1rem; }
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin: 0 0 0.35rem; }
+  h1 { font-size: clamp(1.3rem, 2.4vw, 1.75rem); font-weight: 700; margin: 0; text-wrap: balance; }
+  .sub { font-size: 0.88rem; color: var(--text-2); margin: 0.4rem 0 0; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+
+  .alert { position: relative; overflow: hidden; border: 1px solid var(--amber); background: var(--amber-bg); border-radius: 12px; padding: 1.1rem 1.25rem 1.25rem; box-shadow: var(--shadow); }
+  .alert-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+  .alert-eyebrow { font-family: var(--mono); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 0.35rem; font-family: var(--mono); font-size: 0.72rem; font-weight: 600; padding: 0.22rem 0.55rem; border-radius: 999px; background: rgba(0,99,0,0.12); color: var(--good); }
+  .alert-title { font-size: 1.02rem; font-weight: 700; margin: 0 0 0.5rem; }
+  .alert-body { font-size: 0.89rem; line-height: 1.6; margin: 0; }
+  .alert-sources { font-size: 0.8rem; margin-top: 0.7rem; }
+  .alert-sources a { color: var(--amber); font-weight: 600; }
+
+  .section-title { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .section-sub { font-size: 0.82rem; color: var(--text-2); margin: 0 0 0.9rem; }
+
+  .chart-card { padding: 1.2rem 1.3rem 1.3rem; }
+  .legend { display: flex; gap: 1.1rem; align-items: center; margin-bottom: 1rem; font-size: 0.78rem; color: var(--text-2); }
+  .legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  .divrow { display: grid; grid-template-columns: 8.5rem 1fr; align-items: center; gap: 0.75rem; padding: 0.4rem 0; }
+  .divrow + .divrow { border-top: 1px solid var(--grid); }
+  .divlabel { font-size: 0.84rem; font-weight: 600; color: var(--text-1); text-align: right; }
+  .divtrack { position: relative; height: 22px; }
+  .divtrack .baseline { position: absolute; left: 50%; top: -6px; bottom: -6px; width: 1px; background: var(--baseline); }
+  .divbar { position: absolute; top: 3px; height: 16px; cursor: default; }
+  .divbar.neg { right: 50%; background: var(--red); border-radius: 4px 0 0 4px; }
+  .divbar.pos { left: 50%; background: var(--blue); border-radius: 0 4px 4px 0; }
+  .divval { position: absolute; top: 0; height: 22px; display: flex; align-items: center; font-family: var(--mono); font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+  .divval.neg { color: var(--critical); right: calc(50% + 6px); text-align: right; justify-content: flex-end; }
+  .divval.pos { color: var(--good); left: calc(50% + 6px); }
+  .divbar[data-tip]:hover::after, .divbar[data-tip]:focus-visible::after {
+    content: attr(data-tip);
+    position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+    background: var(--text-1); color: var(--surface);
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 500;
+    padding: 0.3rem 0.55rem; border-radius: 6px; white-space: nowrap; z-index: 5;
+    box-shadow: var(--shadow);
+  }
+  .axis-note { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.68rem; color: var(--text-mute); margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid var(--grid); }
+
+  .table-wrap { margin-top: 1.1rem; overflow-x: auto; }
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .data-table caption { text-align: left; font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.4rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+  .data-table th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-mute); font-weight: 600; padding: 0 0.6rem 0.5rem 0; border-bottom: 1px solid var(--grid); }
+  .data-table td { padding: 0.5rem 0.6rem 0.5rem 0; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td.num { text-align: right; font-family: var(--mono); }
+  .data-table td.num.neg { color: var(--critical); }
+  .data-table td.num.pos { color: var(--good); }
+
+  .context { padding: 1rem 1.25rem; font-size: 0.86rem; line-height: 1.6; color: var(--text-2); }
+  .context b { color: var(--text-1); }
+
+  footer { font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute); text-align: center; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  footer a { color: var(--text-mute); }
+</style>
+
+<div class="viz-root">
+  <div class="wrap">
+
+    <header class="header">
+      <p class="eyebrow">Radar-Vielle · Sujet 1/7 — Bourse</p>
+      <h1>Alertes Bourse</h1>
+      <p class="sub">Déclencheurs détectés par le radar de veille — focus sectoriel IT/tech</p>
+    </header>
+
+    <div class="alert">
+      <div class="alert-head">
+        <p class="alert-eyebrow">🔔 Alerte du 25/07/2026</p>
+        <span class="pill">✓ Déclencheur atteint (≥ 2%)</span>
+      </div>
+      <p class="alert-title">Sell-off tech US à l'approche de la réunion de la Fed</p>
+      <p class="alert-body">Le secteur tech américain a nettement corrigé cette semaine : Alphabet a chuté de 7,1&nbsp;% (~300&nbsp;Md$ de capitalisation effacés) après un capex 2026 revu à 195-205&nbsp;Md$, l'indice des semi-conducteurs SOXX a perdu plus de 4&nbsp;% sur des craintes de soutenabilité de la demande IA, et Intel a plongé de 7,88&nbsp;% malgré des résultats supérieurs aux attentes. Les indices larges sont restés quasi stables — la correction se concentre sur les valeurs tech/IT, conformément au focus sectoriel du sujet Bourse (CLAUDE.md). La Fed se réunit le 29/07 sous la présidence de Kevin Warsh, dans l'incertitude sur une possible hausse de taux.</p>
+      <p class="alert-sources">Sources lues avec succès : <a href="https://ts2.tech/en/stock-market-today-25-07-2026/" target="_blank" rel="noopener">ts2.tech</a> · <a href="https://finance.yahoo.com/markets/live/stock-market-today-friday-july-24-dow-sp-500-nasdaq-081854465.html" target="_blank" rel="noopener">Yahoo Finance</a></p>
+    </div>
+
+    <section>
+      <p class="section-title">Variation par valeur / indice</p>
+      <p class="section-sub">Écart en % — semaine du 21 au 25 juillet 2026</p>
+      <div class="card chart-card">
+        <div class="legend">
+          <span class="legend-item"><span class="swatch" style="background:var(--red);"></span>Baisse</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--blue);"></span>Hausse</span>
+        </div>
+        <div id="chart"></div>
+        <div class="axis-note"><span>-8 %</span><span>0</span><span>+8 %</span></div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption>Vue tableau (données du graphique)</caption>
+            <thead><tr><th>Valeur / indice</th><th style="text-align:right;">Variation</th></tr></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card context">
+        <b>Contexte :</b> réunion de la Fed le 29/07/2026 sous la présidence de Kevin Warsh — marchés dans l'incertitude sur une possible hausse de taux. Les indices larges (S&amp;P&nbsp;500, Dow) restent quasi stables ; la correction se concentre sur les valeurs tech/IT, conformément au focus sectoriel du sujet Bourse (CLAUDE.md).
+      </div>
+    </section>
+
+    <footer>
+      Radar de veille — CLAUDE.md · github.com/claudioborlo/Radar-Vielle
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  var data = [
+    { name: "Intel", value: -7.88, tip: "Intel : -7,88 % malgré des résultats supérieurs aux attentes" },
+    { name: "Alphabet", value: -7.1, tip: "Alphabet : -7,1 % (~300 Md$ de capitalisation effacés)" },
+    { name: "SOXX (semi-conducteurs)", value: -4.0, tip: "SOXX : plus de -4 % (craintes sur la demande IA)", approx: true },
+    { name: "Nasdaq 100", value: -1.27, tip: "Nasdaq 100 : -1,27 %" },
+    { name: "S&P 500", value: -0.08, tip: "S&P 500 : -0,08 %" },
+    { name: "Dow Jones", value: 0.39, tip: "Dow Jones : +0,39 %" }
+  ];
+
+  var scale = 8; // symmetric half-scale in %
+  var chart = document.getElementById("chart");
+  var tbody = document.getElementById("table-body");
+
+  data.forEach(function (d) {
+    var isPos = d.value >= 0;
+    var pct = Math.min(Math.abs(d.value) / scale * 100, 100);
+
+    var row = document.createElement("div");
+    row.className = "divrow";
+
+    var label = document.createElement("div");
+    label.className = "divlabel";
+    label.textContent = d.name;
+    row.appendChild(label);
+
+    var track = document.createElement("div");
+    track.className = "divtrack";
+
+    var baseline = document.createElement("div");
+    baseline.className = "baseline";
+    track.appendChild(baseline);
+
+    var bar = document.createElement("div");
+    bar.className = "divbar " + (isPos ? "pos" : "neg");
+    bar.style.width = pct + "%";
+    bar.setAttribute("data-tip", d.tip);
+    bar.tabIndex = 0;
+    track.appendChild(bar);
+
+    var val = document.createElement("div");
+    val.className = "divval " + (isPos ? "pos" : "neg");
+    val.textContent = (d.approx ? "> " : "") + (isPos ? "+" : "") + d.value.toFixed(2).replace(".", ",") + " %";
+    track.appendChild(val);
+
+    row.appendChild(track);
+    chart.appendChild(row);
+
+    var tr = document.createElement("tr");
+    var numClass = isPos ? "pos" : "neg";
+    tr.innerHTML = "<td>" + d.name + "</td><td class=\"num " + numClass + "\">" + (d.approx ? "> " : "") + (isPos ? "+" : "") + d.value.toFixed(2).replace(".", ",") + " %</td>";
+    tbody.appendChild(tr);
+  });
+})();
+</script>

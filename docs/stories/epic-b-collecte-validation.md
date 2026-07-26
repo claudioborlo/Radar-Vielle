@@ -18,6 +18,18 @@ Référence : [architecture.md](../architecture.md) §2, [prd.md](../prd.md) FR1
 
 **Statut** : ✅ ajoutée le 2026-07-26 — à valider sur le prochain run réel de la routine (comme les 6 sujets existants, cf. critères d'acceptation de la Story B1).
 
+## Story B3 — Tableau de bord dédié Drone + correction d'un bug d'échelle (2026-07-26)
+
+**Déclencheur** : remarque de l'utilisateur — le graphique « Variation par valeur / indice » (sujet Bourse) affichait des valeurs incohérentes avec son échelle, et il manquait un tableau de bord dédié au sujet Drone (sur le modèle du tableau de bord Bourse existant).
+
+**Bug corrigé** : le graphique en barres divergentes (tableau de bord projet + tableau de bord Bourse dédié) utilise une échelle symétrique ±8% (`var scale = 8; // symmetric half-scale in %`), mais l'étiquette d'axe affichait à tort « +2 % » côté positif au lieu de « +8 % » — incohérence entre l'échelle réellement utilisée pour dessiner les barres et le repère affiché à l'utilisateur. Corrigé sur les deux pages concernées.
+
+**Tableau de bord Drone dédié créé** : `dashboards/alertes-drone.html`, publié à https://claude.ai/code/artifact/8ec3c247-559a-411f-a60f-3142afa5128d — reprend les alertes du sujet Drone (AndroMach, Valeo x Harmattan AI) et ajoute un **radar chart** (petits multiples, un par valeur) comparant les 6 sociétés de la simulation Drones (Story F9) sur 4 axes normalisés 0-100 : Performance (depuis l'entrée), Stabilité (inverse du risque affiché), Liquidité (capitalisation, échelle log) et Conviction (poids dans l'allocation). Méthodologie de calcul documentée explicitement sur la page (transformations de données déjà sourcées, pas des notes inventées) — vue tableau incluse pour l'accessibilité.
+
+**Persistance** : les deux dashboards « historiques » qui n'avaient jamais eu de fichier source dans le repo (tableau de bord projet, tableau de bord Bourse dédié) sont désormais versionnés — `dashboards/project-dashboard.html` et `dashboards/alertes-bourse.html` — pour permettre leur maintenance future sans dépendre uniquement de l'état publié sur claude.ai.
+
+**Statut** : ✅ appliquée le 2026-07-26 — 3 dashboards republiés (tableau de bord projet, Alertes Bourse corrigé, Alertes & Radar Drone nouveau), liens croisés ajoutés entre eux.
+
 **Critères d'acceptation** (à vérifier sur un digest réel produit) :
 - [ ] Chaque sujet mentionné dans le digest cite au moins une source, et cette source a été effectivement récupérée (pas de résumé basé sur un titre/snippet seul).
 - [ ] Une source inaccessible (paywall/erreur/vide) est signalée explicitement, jamais résumée (FR3 — règle absolue).

@@ -1,0 +1,326 @@
+<title>Radar de veille — Alertes & Radar Drone</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --page:      #f9f9f7;
+    --surface:   #fcfcfb;
+    --surface-2: #eef1f6;
+    --text-1:    #0b0b0b;
+    --text-2:    #52514e;
+    --text-mute: #898781;
+    --grid:      #e1e0d9;
+    --border:    rgba(11,11,11,0.10);
+    --shadow:    0 1px 2px rgba(11,11,11,0.06), 0 8px 24px rgba(11,11,11,0.05);
+    --amber:     #c9791a;
+    --amber-bg:  #fbeed9;
+    --good:      #006300;
+    --critical:  #d03b3b;
+    --crit-bg:   rgba(208,59,59,0.12);
+    --warn-bg:   rgba(250,178,25,0.16);
+    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #e34948;
+    --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --surface-2: #212121;
+      --text-1: #ffffff; --text-2: #c3c2b7; --text-mute: #898781;
+      --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+      --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+      --good: #0ca30c; --critical: #d03b3b; --crit-bg: rgba(208,59,59,0.16); --warn-bg: rgba(250,178,25,0.14);
+      --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #e66767;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #212121;
+    --text-1: #ffffff; --text-2: #c3c2b7; --text-mute: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+    --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+    --good: #0ca30c; --critical: #d03b3b; --crit-bg: rgba(208,59,59,0.16); --warn-bg: rgba(250,178,25,0.14);
+    --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #e66767;
+  }
+  :root[data-theme="light"] .viz-root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #eef1f6;
+    --text-1: #0b0b0b; --text-2: #52514e; --text-mute: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
+    --shadow: 0 1px 2px rgba(11,11,11,0.06), 0 8px 24px rgba(11,11,11,0.05);
+    --amber: #c9791a; --amber-bg: #fbeed9;
+    --good: #006300; --critical: #d03b3b; --crit-bg: rgba(208,59,59,0.12); --warn-bg: rgba(250,178,25,0.16);
+    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #e34948;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .viz-root {
+    background: var(--page);
+    color: var(--text-1);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: clamp(1rem, 3vw, 2.5rem);
+  }
+  .wrap { max-width: 68rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.1rem; }
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin: 0 0 0.35rem; }
+  h1 { font-size: clamp(1.3rem, 2.4vw, 1.75rem); font-weight: 700; margin: 0; text-wrap: balance; }
+  .sub { font-size: 0.88rem; color: var(--text-2); margin: 0.4rem 0 0; }
+  .nav-link { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--c1); text-decoration: none; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 0.4rem 0.7rem; box-shadow: var(--shadow); }
+  .nav-link:hover { background: var(--surface-2); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+
+  .alert { position: relative; overflow: hidden; border: 1px solid var(--amber); background: var(--amber-bg); border-radius: 12px; padding: 1.1rem 1.25rem 1.25rem; box-shadow: var(--shadow); }
+  .alert-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+  .alert-eyebrow { font-family: var(--mono); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 0.35rem; font-family: var(--mono); font-size: 0.72rem; font-weight: 600; padding: 0.22rem 0.55rem; border-radius: 999px; background: rgba(0,99,0,0.12); color: var(--good); }
+  .alert-title { font-size: 1.02rem; font-weight: 700; margin: 0 0 0.5rem; }
+  .alert-body { font-size: 0.89rem; line-height: 1.6; margin: 0; }
+  .alert-sources { font-size: 0.8rem; margin-top: 0.7rem; }
+  .alert-sources a { color: var(--amber); font-weight: 600; }
+
+  .section-title { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .section-sub { font-size: 0.82rem; color: var(--text-2); margin: 0 0 0.9rem; }
+
+  .radar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr)); gap: 1rem; }
+  .radar-card { padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .radar-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+  .radar-name { font-weight: 700; font-size: 0.95rem; margin: 0; }
+  .radar-sector { font-size: 0.74rem; color: var(--text-mute); margin: 0.1rem 0 0; }
+  .risk-badge { font-family: var(--mono); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.18rem 0.45rem; border-radius: 999px; white-space: nowrap; }
+  .risk-modere { background: var(--warn-bg); color: #9a6a00; }
+  .risk-moyen { background: var(--warn-bg); color: #9a6a00; }
+  .risk-eleve { background: var(--crit-bg); color: var(--critical); }
+  .risk-tres-eleve { background: var(--critical); color: #fff; }
+  .risk-extreme { background: #6b0f0f; color: #fff; }
+  .radar-svg-wrap { display: flex; justify-content: center; }
+  .radar-svg { width: 100%; max-width: 15rem; height: auto; }
+  .radar-legend-mini { display: flex; flex-wrap: wrap; gap: 0.4rem 0.8rem; font-size: 0.68rem; color: var(--text-mute); justify-content: center; }
+  .radar-legend-mini b { color: var(--text-1); font-family: var(--mono); }
+
+  .axes-legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.78rem; color: var(--text-2); margin-bottom: 1.1rem; }
+  .axes-legend span b { color: var(--text-1); }
+
+  .table-wrap { margin-top: 0; overflow-x: auto; }
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .data-table caption { text-align: left; font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.4rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+  .data-table th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-mute); font-weight: 600; padding: 0 0.6rem 0.5rem 0; border-bottom: 1px solid var(--grid); }
+  .data-table td { padding: 0.5rem 0.6rem 0.5rem 0; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td.num { text-align: right; font-family: var(--mono); }
+
+  .context { padding: 1rem 1.25rem; font-size: 0.86rem; line-height: 1.6; color: var(--text-2); }
+  .context b { color: var(--text-1); }
+  .methodology { padding: 1rem 1.25rem; font-size: 0.82rem; line-height: 1.65; color: var(--text-2); }
+  .methodology b { color: var(--text-1); }
+  .methodology ul { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+  .methodology li { margin-bottom: 0.3rem; }
+
+  footer { font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute); text-align: center; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  footer a { color: var(--text-mute); }
+</style>
+
+<div class="viz-root">
+  <div class="wrap">
+
+    <header class="header">
+      <div>
+        <p class="eyebrow">Radar-Vielle · Sujet 3/7 — Robot / Drone</p>
+        <h1>Alertes & Radar Drone</h1>
+        <p class="sub">Déclencheurs du sujet Drone + profil comparatif des 6 valeurs de la simulation dédiée (Story F9)</p>
+      </div>
+      <a class="nav-link" href="https://claude.ai/code/artifact/9474ab38-0d8f-4edb-a24a-5385a7c2eaf0" target="_blank" rel="noopener">📡 Tableau de bord projet</a>
+    </header>
+
+    <div class="alert">
+      <div class="alert-head">
+        <p class="alert-eyebrow">🔔 Alerte du 23/07/2026</p>
+        <span class="pill">✓ Déclencheur atteint (annonce d'investissement)</span>
+      </div>
+      <p class="alert-title">AndroMach prépare une levée de fonds pour son drone suborbital hypersonique</p>
+      <p class="alert-body">AndroMach (fondée en 2023 par des ingénieurs de l'IPSA) prépare un tour de table via Souvtech Invest pour financer son drone réutilisable <b>Envol</b> (Mach 5, 200 km d'altitude, 30 kg de charge utile). La DGA a déjà financé une campagne d'essais réussie du moteur-fusée « Banger » (21 allumages, 7 min de combustion cumulée), et le CNES est également impliqué. Premier vol prototype visé 2026-2027, version opérationnelle 2028.</p>
+      <p class="alert-sources">Source lue avec succès : <a href="https://www.opex360.com/2026/07/23/avec-lappui-du-cnes-et-de-la-dga-andromach-est-en-bonne-voie-de-faire-voler-un-drone-suborbital-hypersonique/" target="_blank" rel="noopener">opex360.com, 23/07/2026</a></p>
+    </div>
+
+    <div class="alert" style="border-color:var(--c1); background:rgba(42,120,214,0.08);">
+      <div class="alert-head">
+        <p class="alert-eyebrow" style="color:var(--c1);">🔔 Alerte du 20/07/2026</p>
+        <span class="pill" style="background:rgba(42,120,214,0.14); color:var(--c1);">✓ Contrat / partenariat majeur</span>
+      </div>
+      <p class="alert-title">Valeo x Harmattan AI : moteur électrique souverain pour drones, production France 2027</p>
+      <p class="alert-body">Valeo a été sélectionné par Harmattan AI pour développer et produire en France un moteur électrique souverain pour drones — premier contrat de Valeo dans ce secteur. Harmattan AI a par ailleurs été commanditée par la DGA le 28/05/2026 pour 5 000 drones du combattant Delco supplémentaires.</p>
+      <p class="alert-sources">Sources lues avec succès : <a href="https://www.valeo.com/en/valeo-has-been-selected-by-harmattan-ai-to-develop-and-produce-in-france-a-sovereign-electric-drone-motor/" target="_blank" rel="noopener">Valeo</a> · <a href="https://www.defense.gouv.fr/dga/actualites/dga-commande-5-000-drones-du-combattant-delco-larmee-terre" target="_blank" rel="noopener">DGA</a></p>
+    </div>
+
+    <section>
+      <p class="section-title">Radar comparatif — portefeuille spéculatif Drones (10 000 €)</p>
+      <p class="section-sub">4 axes normalisés 0-100 par valeur, dérivés des données réelles déjà sourcées sur <a href="https://claude.ai/code/artifact/fa0a9505-d3ff-40be-bb57-a5abef24f6f5" target="_blank" rel="noopener">le tableau de bord de simulation</a> (méthodologie détaillée plus bas) — pas un score inventé.</p>
+      <div class="axes-legend">
+        <span><b>Performance</b> — depuis l'entrée du 01/07/2026</span>
+        <span><b>Stabilité</b> — inverse du niveau de risque affiché</span>
+        <span><b>Liquidité</b> — capitalisation boursière (échelle log)</span>
+        <span><b>Conviction</b> — poids dans l'allocation des 10 000 €</span>
+      </div>
+      <div class="radar-grid" id="radar-grid"></div>
+    </section>
+
+    <section>
+      <div class="card" style="padding:1.1rem 1.25rem 1.25rem;">
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption>Vue tableau (accessibilité) — valeurs normalisées 0-100</caption>
+            <thead><tr><th>Valeur</th><th style="text-align:right;">Performance</th><th style="text-align:right;">Stabilité</th><th style="text-align:right;">Liquidité</th><th style="text-align:right;">Conviction</th></tr></thead>
+            <tbody id="radar-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card methodology">
+        <b>Méthode de calcul (transparence) :</b>
+        <ul>
+          <li><b>Performance</b> : perf. réelle depuis l'entrée (01/07/2026), mappée linéairement de -15% → 0 et +15% → 100.</li>
+          <li><b>Stabilité</b> : conversion du badge de risque affiché sur le dashboard de simulation — modéré/moyen ≈ 65-80, élevé ≈ 45, très élevé ≈ 25, extrême ≈ 10.</li>
+          <li><b>Liquidité</b> : capitalisation boursière réelle, sur une échelle logarithmique (10 M€ → 0, 100 Md€ → 100) pour rendre comparables des tailles très différentes (17 M€ à 55,8 Md€).</li>
+          <li><b>Conviction</b> : montant alloué dans le portefeuille de 10 000 €, rapporté à la ligne la plus importante (2 500 €).</li>
+        </ul>
+        <p style="margin:0.6rem 0 0;">Ces 4 scores sont des transformations de données déjà sourcées (voir <a href="https://claude.ai/code/artifact/fa0a9505-d3ff-40be-bb57-a5abef24f6f5" target="_blank" rel="noopener">le dashboard de simulation</a> pour les cours et sources individuelles) — ce ne sont pas des notations subjectives ou des conseils d'investissement.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="card context">
+        <b>Contexte :</b> ce radar visualise en un coup d'œil pourquoi le portefeuille Drone (Story F9) mélange volontairement des profils très différents — Rheinmetall et Leonardo servent d'ancres liquides et stables, tandis qu'Embention et Drone Volt apportent le potentiel de hausse, et Tonner Drones reste un satellite ultra-spéculatif à faible conviction. Voir <a href="https://claude.ai/code/artifact/fa0a9505-d3ff-40be-bb57-a5abef24f6f5" target="_blank" rel="noopener">le dashboard de simulation complet</a> pour le détail par valeur et le suivi quotidien de performance.
+      </div>
+    </section>
+
+    <footer>
+      Radar de veille — <a href="https://claude.ai/code/artifact/9474ab38-0d8f-4edb-a24a-5385a7c2eaf0" target="_blank" rel="noopener">tableau de bord projet</a> · <a href="https://claude.ai/code/artifact/fa0a9505-d3ff-40be-bb57-a5abef24f6f5" target="_blank" rel="noopener">simulation portefeuille Drones</a> · github.com/claudioborlo/Radar-Vielle
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  var axes = ["Performance", "Stabilité", "Liquidité", "Conviction"];
+  var stocks = [
+    { name: "Embention", sector: "Avionique / IA embarquée drones & eVTOL", risk: "élevé", color: "var(--c1)", scores: [92, 45, 36, 100] },
+    { name: "Rheinmetall", sector: "Défense / munitions rôdeuses", risk: "modéré", color: "var(--c2)", scores: [46, 80, 94, 80] },
+    { name: "Parrot", sector: "Drones professionnels / défense", risk: "moyen", color: "var(--c3)", scores: [45, 65, 37, 80] },
+    { name: "Drone Volt", sector: "Drones civils / défense", risk: "très élevé", color: "var(--c4)", scores: [45, 25, 11, 60] },
+    { name: "Leonardo", sector: "Défense / drones Falco EVO", risk: "modéré", color: "var(--c5)", scores: [73, 80, 87, 60] },
+    { name: "Tonner Drones", sector: "Holding drones (Diodon, Elistair, Donecle)", risk: "extrême", color: "var(--c6)", scores: [19, 10, 6, 20] }
+  ];
+
+  function riskClass(risk) {
+    if (risk === "extrême") return "extreme";
+    if (risk === "très élevé") return "tres-eleve";
+    if (risk === "élevé") return "eleve";
+    if (risk === "moyen") return "moyen";
+    return "modere";
+  }
+
+  function pointFor(i, value, cx, cy, R) {
+    var angle = (-90 + i * (360 / axes.length)) * Math.PI / 180;
+    var r = R * (value / 100);
+    return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+  }
+
+  function buildRadarSvg(scores, color) {
+    var cx = 60, cy = 58, R = 42;
+    var svgNS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 120 120");
+    svg.classList.add("radar-svg");
+
+    // grid rings
+    [25, 50, 75, 100].forEach(function (ring) {
+      var pts = axes.map(function (_, i) { return pointFor(i, ring, cx, cy, R).join(","); }).join(" ");
+      var poly = document.createElementNS(svgNS, "polygon");
+      poly.setAttribute("points", pts);
+      poly.setAttribute("fill", "none");
+      poly.setAttribute("stroke", "var(--grid)");
+      poly.setAttribute("stroke-width", "1");
+      svg.appendChild(poly);
+    });
+
+    // axis lines + labels
+    axes.forEach(function (label, i) {
+      var end = pointFor(i, 100, cx, cy, R);
+      var line = document.createElementNS(svgNS, "line");
+      line.setAttribute("x1", cx); line.setAttribute("y1", cy);
+      line.setAttribute("x2", end[0]); line.setAttribute("y2", end[1]);
+      line.setAttribute("stroke", "var(--grid)");
+      line.setAttribute("stroke-width", "1");
+      svg.appendChild(line);
+
+      var labelPos = pointFor(i, 122, cx, cy, R);
+      var text = document.createElementNS(svgNS, "text");
+      text.setAttribute("x", labelPos[0]);
+      text.setAttribute("y", labelPos[1]);
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("dominant-baseline", "middle");
+      text.setAttribute("font-size", "8");
+      text.setAttribute("fill", "var(--text-mute)");
+      text.textContent = label.slice(0, 4);
+      svg.appendChild(text);
+    });
+
+    // data polygon
+    var dataPts = scores.map(function (v, i) { return pointFor(i, v, cx, cy, R).join(","); }).join(" ");
+    var dataPoly = document.createElementNS(svgNS, "polygon");
+    dataPoly.setAttribute("points", dataPts);
+    dataPoly.setAttribute("fill", color);
+    dataPoly.setAttribute("fill-opacity", "0.22");
+    dataPoly.setAttribute("stroke", color);
+    dataPoly.setAttribute("stroke-width", "2");
+    dataPoly.setAttribute("stroke-linejoin", "round");
+    svg.appendChild(dataPoly);
+
+    scores.forEach(function (v, i) {
+      var p = pointFor(i, v, cx, cy, R);
+      var dot = document.createElementNS(svgNS, "circle");
+      dot.setAttribute("cx", p[0]); dot.setAttribute("cy", p[1]); dot.setAttribute("r", "2.5");
+      dot.setAttribute("fill", color);
+      svg.appendChild(dot);
+    });
+
+    return svg;
+  }
+
+  var radarGrid = document.getElementById("radar-grid");
+  var tbody = document.getElementById("radar-table-body");
+  stocks.forEach(function (s) {
+    var card = document.createElement("div");
+    card.className = "card radar-card";
+    card.style.borderTop = "3px solid " + s.color;
+
+    var top = document.createElement("div");
+    top.className = "radar-top";
+    top.innerHTML = '<div><p class="radar-name">' + s.name + '</p><p class="radar-sector">' + s.sector + '</p></div>' +
+      '<span class="risk-badge risk-' + riskClass(s.risk) + '">' + s.risk + '</span>';
+    card.appendChild(top);
+
+    var svgWrap = document.createElement("div");
+    svgWrap.className = "radar-svg-wrap";
+    svgWrap.appendChild(buildRadarSvg(s.scores, s.color));
+    card.appendChild(svgWrap);
+
+    var legend = document.createElement("div");
+    legend.className = "radar-legend-mini";
+    legend.innerHTML = axes.map(function (a, i) { return a + " <b>" + s.scores[i] + "</b>"; }).join(" · ");
+    card.appendChild(legend);
+
+    radarGrid.appendChild(card);
+
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + s.name + "</td>" + s.scores.map(function (v) { return "<td class=\"num\">" + v + "</td>"; }).join("");
+    tbody.appendChild(tr);
+  });
+})();
+</script>
