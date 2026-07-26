@@ -1,0 +1,212 @@
+<style>
+  :root {
+    --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #eef1f6;
+    --text: #0b0b0b; --text-mute: #52514e; --text-faint: #898781;
+    --border: rgba(11,11,11,0.10); --grid: #e1e0d9;
+    --shadow: 0 1px 2px rgba(11,11,11,0.06), 0 8px 24px rgba(11,11,11,0.05);
+    --amber: #c9791a; --amber-bg: #fbeed9;
+    --good: #006300; --critical: #d03b3b;
+    --warn-bg: rgba(250,178,25,0.16); --serious-bg: rgba(236,131,90,0.14); --crit-bg: rgba(208,59,59,0.12);
+    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #008300; --c7: #4a3aa7;
+    --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page: #0d0d0d; --surface: #1a1a19; --surface-2: #212121;
+      --text: #ffffff; --text-mute: #c3c2b7; --text-faint: #898781;
+      --border: rgba(255,255,255,0.10); --grid: #2c2c2a;
+      --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+      --good: #0ca30c; --critical: #d03b3b;
+      --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #008300; --c7: #9085e9;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #212121;
+    --text: #ffffff; --text-mute: #c3c2b7; --text-faint: #898781;
+    --border: rgba(255,255,255,0.10); --grid: #2c2c2a;
+    --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+    --good: #0ca30c; --critical: #d03b3b;
+    --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #008300; --c7: #9085e9;
+  }
+  :root[data-theme="light"] {
+    --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #eef1f6;
+    --text: #0b0b0b; --text-mute: #52514e; --text-faint: #898781;
+    --border: rgba(11,11,11,0.10); --grid: #e1e0d9;
+    --amber: #c9791a; --amber-bg: #fbeed9;
+    --good: #006300; --critical: #d03b3b;
+    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #008300; --c7: #4a3aa7;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .app { background: var(--page); color: var(--text); font-family: var(--sans); min-height: 100vh; padding: clamp(1rem, 3vw, 2.5rem); }
+  .wrap { max-width: 68rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+  .header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.1rem; }
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin: 0 0 0.35rem; }
+  h1 { font-size: clamp(1.3rem, 2.4vw, 1.75rem); font-weight: 700; margin: 0; text-wrap: balance; }
+  .sub { font-size: 0.88rem; color: var(--text-mute); margin: 0.4rem 0 0; }
+  .nav-link { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--c1); text-decoration: none; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 0.4rem 0.7rem; box-shadow: var(--shadow); }
+  .nav-link:hover { background: var(--surface-2); }
+  .disclaimer { border: 1px solid var(--amber); background: var(--amber-bg); border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 0.85rem; line-height: 1.55; }
+  .disclaimer b { color: var(--text); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  .section-title { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .section-sub { font-size: 0.82rem; color: var(--text-mute); margin: 0 0 0.9rem; }
+
+  /* Stacked allocation bar */
+  .alloc-card { padding: 1.2rem 1.3rem 1.3rem; }
+  .alloc-bar { display: flex; height: 40px; border-radius: 8px; overflow: hidden; }
+  .alloc-seg { display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.72rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; border-right: 2px solid var(--page); }
+  .alloc-seg:last-child { border-right: none; }
+  .alloc-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.5rem 1rem; margin-top: 1.1rem; }
+  .alloc-legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; }
+  .alloc-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .alloc-legend-item b { font-family: var(--mono); margin-left: auto; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; }
+  .stock-card { padding: 1rem 1.15rem 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+  .stock-name { font-weight: 700; font-size: 0.98rem; margin: 0; }
+  .stock-sector { font-size: 0.76rem; color: var(--text-faint); margin: 0.1rem 0 0; }
+  .risk-badge { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.2rem 0.5rem; border-radius: 999px; white-space: nowrap; }
+  .risk-modere { background: var(--warn-bg); color: #9a6a00; }
+  .risk-eleve { background: var(--crit-bg); color: var(--critical); }
+  :root[data-theme="dark"] .risk-modere, @media (prefers-color-scheme: dark) { }
+  .stock-amount { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; }
+  .stock-pct { color: var(--text-faint); font-size: 0.8rem; font-weight: 500; }
+  .stock-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.3rem 0; border-top: 1px dashed var(--grid); }
+  .stock-row b { font-family: var(--mono); }
+  .stock-link { font-size: 0.86rem; line-height: 1.5; color: var(--text-mute); margin: 0.2rem 0 0; }
+  .stock-source { font-size: 0.74rem; margin-top: 0.4rem; }
+  .stock-source a { color: var(--amber); }
+
+  .table-wrap { margin-top: 0; overflow-x: auto; }
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .data-table caption { text-align: left; font-size: 0.72rem; color: var(--text-faint); margin-bottom: 0.4rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+  .data-table th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); font-weight: 600; padding: 0 0.6rem 0.5rem 0; border-bottom: 1px solid var(--grid); }
+  .data-table td { padding: 0.5rem 0.6rem 0.5rem 0; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td.num { text-align: right; font-family: var(--mono); }
+
+  footer { font-family: var(--mono); font-size: 0.7rem; color: var(--text-faint); text-align: center; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  footer a { color: var(--text-faint); }
+</style>
+
+<div class="app">
+  <div class="wrap">
+    <header class="header">
+      <div>
+        <p class="eyebrow">Radar-Vielle · Epic F</p>
+        <h1>Simulation PEA — 10 000 €</h1>
+        <p class="sub">Répartition illustrative basée sur les signaux du radar (Bourse, Tech/IA, Robot/Drone)</p>
+      </div>
+      <a class="nav-link" href="https://claude.ai/code/artifact/9474ab38-0d8f-4edb-a24a-5385a7c2eaf0" target="_blank" rel="noopener">📡 Tableau de bord projet</a>
+    </header>
+
+    <div class="disclaimer">
+      <b>⚠ Analyse informative, pas un conseil en investissement personnalisé.</b> Cette simulation croise les signaux déjà collectés par le radar avec des recherches ponctuelles — elle ne remplace pas l'avis d'un conseiller financier agréé, en particulier pour une décision réelle de 10 000 € dans un cadre fiscal PEA. Les cours affichés datent du moment de la recherche (25-26/07/2026) et ne sont pas mis à jour en temps réel.
+    </div>
+
+    <section>
+      <p class="section-title">Répartition des 10 000 €</p>
+      <p class="section-sub">7 lignes — barre empilée, ordre fixe</p>
+      <div class="card alloc-card">
+        <div class="alloc-bar" id="alloc-bar"></div>
+        <div class="alloc-legend" id="alloc-legend"></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="section-title">Détail par valeur</p>
+      <p class="section-sub">Cours et contexte réels (sourcés le 25-26/07/2026) — voir le tableau de dispense en bas pour les sources complètes</p>
+      <div class="grid" id="stock-grid"></div>
+    </section>
+
+    <section>
+      <div class="card" style="padding:1.1rem 1.25rem 1.25rem;">
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption>Vue tableau complète (accessibilité)</caption>
+            <thead><tr><th>Valeur</th><th>Secteur</th><th style="text-align:right;">Montant</th><th style="text-align:right;">%</th><th>Lien radar</th><th>Risque</th></tr></thead>
+            <tbody id="history-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Radar de veille — <a href="https://claude.ai/code/artifact/f93eaf60-eee8-4483-9295-aeb5ac7e4142" target="_blank" rel="noopener">tendances</a> · github.com/claudioborlo/Radar-Vielle
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  var colors = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)", "var(--c6)", "var(--c7)"];
+  var positions = [
+    { name: "Thales", sector: "Défense / cybersécurité", amount: 2000, link: "Budgets militaires en hausse, tensions géopolitiques", risk: "modéré",
+      price: "236,4 €", change: "+16,71 % depuis le 1ᵉʳ janvier 2026", detail: "Carnet de commandes record 53,3 Md€ (2025) · capitalisation 55,46 Md€ · +66% en 2025 (valorisation déjà tendue)",
+      source: "https://revenusetdividendes.com/actions-france/thales-epa-ho/" },
+    { name: "Dassault Aviation", sector: "Aéronautique défense", amount: 2000, link: "A mené la levée Series B (200 M$) d'Harmattan AI ; détient 26% de Thales", risk: "modéré",
+      price: "—", change: "Résultats S1 2026 en nette hausse", detail: "Exposition défense directe + accès indirect à l'écosystème drone (Harmattan AI)",
+      source: "https://techcrunch.com/2026/01/12/harmattan-ai-raises-200m-series-b-led-by-dassault-aviation-becomes-defense-unicorn" },
+    { name: "Valeo", sector: "Équipementier auto → drones", amount: 1500, link: "Partenariat direct Harmattan AI (moteurs de drones, sujet Drone du radar)", risk: "modéré",
+      price: "—", change: "Annonce du 20/07/2026 confirmée", detail: "Diversification vers la défense après les datacenters ; production France dès 2027",
+      source: "https://www.valeo.com/en/valeo-has-been-selected-by-harmattan-ai-to-develop-and-produce-in-france-a-sovereign-electric-drone-motor/" },
+    { name: "Safran", sector: "Aéronautique / défense", amount: 1500, link: "Cité systématiquement parmi les valeurs défense à suivre", risk: "modéré",
+      price: "—", change: "—", detail: "Diversifie l'exposition défense hors du duo Thales/Dassault Aviation",
+      source: "https://www.abcbourse.com/marches/les-actions-a-suivre-mercredi-argan-safran-airbus-dassault-aviation-eurazeo_697073" },
+    { name: "Capgemini", sector: "Services IT / IA", amount: 1500, link: "Croissance +11% tirée par l'IA (T1 2026)", risk: "modéré",
+      price: "101,88 €", change: "+4,24 % (récent)", detail: "Profil IA \"value\", moins volatil que les purs éditeurs de logiciels IA",
+      source: "https://www.investing.com/news/company-news/capgemini-q1-2026-slides-11-revenue-growth-led-by-ai-acquisitions-93CH-4647826" },
+    { name: "STMicroelectronics", sector: "Semi-conducteurs", amount: 1000, link: "Revenus datacenter IA visant ~1 Md$ en 2026", risk: "élevé",
+      price: "—", change: "Prévisions T3 décevantes", detail: "Pari IA plus risqué : dynamique forte mais guidance récente qui a déçu",
+      source: "https://finance.yahoo.com/sectors/technology/articles/stmicro-raises-data-centre-revenue-102436626.html" },
+    { name: "Réserve de liquidités", sector: "—", amount: 500, link: "Observer Dassault Systèmes avant d'entrer (volatilité IA)", risk: "—",
+      price: "—", change: "—", detail: "Dassault Systèmes a chuté fortement sur craintes de disruption IA (Anthropic/Prometheus) — à surveiller plutôt qu'à acheter tout de suite",
+      source: "https://www.bloomberg.com/news/articles/2026-02-11/dassault-systemes-shares-plunge-most-since-2002-on-weak-outlook" }
+  ];
+
+  var total = positions.reduce(function (s, p) { return s + p.amount; }, 0);
+
+  var allocBar = document.getElementById("alloc-bar");
+  var allocLegend = document.getElementById("alloc-legend");
+  positions.forEach(function (p, i) {
+    var pct = (p.amount / total * 100);
+    var seg = document.createElement("div");
+    seg.className = "alloc-seg";
+    seg.style.width = pct + "%";
+    seg.style.background = colors[i];
+    seg.textContent = pct >= 8 ? Math.round(pct) + "%" : "";
+    seg.title = p.name + " — " + p.amount.toLocaleString("fr-FR") + " € (" + pct.toFixed(1) + "%)";
+    allocBar.appendChild(seg);
+
+    var item = document.createElement("div");
+    item.className = "alloc-legend-item";
+    item.innerHTML = '<span class="alloc-swatch" style="background:' + colors[i] + ';"></span>' + p.name + ' <b>' + p.amount.toLocaleString("fr-FR") + ' €</b>';
+    allocLegend.appendChild(item);
+  });
+
+  var stockGrid = document.getElementById("stock-grid");
+  var histBody = document.getElementById("history-table-body");
+  positions.forEach(function (p, i) {
+    var pct = (p.amount / total * 100).toFixed(1);
+    var isCash = p.name === "Réserve de liquidités";
+    var card = document.createElement("div");
+    card.className = "card stock-card";
+    card.style.borderTop = "3px solid " + colors[i];
+    card.innerHTML =
+      '<div class="stock-top"><div><p class="stock-name">' + p.name + '</p><p class="stock-sector">' + p.sector + '</p></div>' +
+      (p.risk !== "—" ? '<span class="risk-badge risk-' + (p.risk === "élevé" ? "eleve" : "modere") + '">' + p.risk + '</span>' : '') + '</div>' +
+      '<div><span class="stock-amount">' + p.amount.toLocaleString("fr-FR") + ' €</span> <span class="stock-pct">(' + pct + '%)</span></div>' +
+      (!isCash ? '<div class="stock-row"><span>Cours</span><b>' + p.price + '</b></div><div class="stock-row"><span>Variation</span><b>' + p.change + '</b></div>' : '') +
+      '<p class="stock-link">' + p.detail + '</p>' +
+      '<p class="stock-source"><a href="' + p.source + '" target="_blank" rel="noopener">Source</a></p>';
+    stockGrid.appendChild(card);
+
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + p.name + "</td><td>" + p.sector + "</td><td class=\"num\">" + p.amount.toLocaleString("fr-FR") + " €</td><td class=\"num\">" + pct + "%</td><td>" + p.link + "</td><td>" + (p.risk !== "—" ? p.risk : "—") + "</td>";
+    histBody.appendChild(tr);
+  });
+})();
+</script>

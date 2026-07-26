@@ -1,0 +1,37 @@
+# Epic F — Simulation d'investissement PEA
+
+Ajouté le 2026-07-26, à la demande de l'utilisateur : simuler une allocation de 10 000 € dans un PEA (Plan d'Épargne en Actions), en s'appuyant sur les tendances technologiques et la situation géopolitique déjà détectées par le radar, pour identifier des actions françaises à surveiller.
+
+**Avertissement (à rappeler à chaque itération de cet epic)** : il s'agit d'une analyse informative construite à partir de sources publiques et des signaux du radar — **pas un conseil en investissement personnalisé**. Aucune recommandation d'achat ferme n'est faite ; l'utilisateur reste seul décisionnaire et est invité à consulter un conseiller financier agréé avant toute décision réelle, en particulier compte tenu du montant (10 000 €) et du cadre fiscal du PEA.
+
+**Contrainte structurelle du PEA** : seules les actions de sociétés dont le siège est dans l'UE/EEE sont éligibles (avec quelques exceptions type ETF PEA synthétiques) — le périmètre est donc naturellement limité aux valeurs françaises/européennes, ce qui correspond à la demande de l'utilisateur.
+
+## Story F1 — Croisement des signaux radar avec des valeurs françaises éligibles PEA
+
+**Description** : à partir des thèmes déjà suivis par le radar (Bourse, Tech/IA, Robot/Drone, Matières premières, Climat), identifier des sociétés françaises cotées et éligibles PEA dont l'activité est directement exposée à ces tendances (ex. défense/drones face aux tensions géopolitiques, semi-conducteurs/logiciels face à la dynamique IA).
+
+**Statut** : ✅ réalisée le 2026-07-26 — voir échange en conversation pour la liste et le raisonnement détaillé.
+
+## Story F2 — Vérification des données via sources réelles
+
+**Description** : ne jamais avancer un cours de bourse ou une donnée financière sans l'avoir récupérée d'une source réelle (même règle absolue que le reste du radar) — sinon, le signaler explicitement comme non vérifié.
+
+**Statut** : en cours — dépend de la disponibilité d'un outil de recherche/lecture web dans la conversation au moment de l'analyse (contrairement à la routine cloud, cette conversation ne dispose pas nécessairement de WebSearch).
+
+## Story F3 — Simulation d'allocation (à titre illustratif uniquement)
+
+**Description** : proposer une répartition illustrative des 10 000 € entre les valeurs identifiées, pour donner un ordre de grandeur — pas une recommandation d'exécution.
+
+**Statut** : ✅ réalisée le 2026-07-26 — 7 lignes (Thales, Dassault Aviation, Valeo, Safran, Capgemini, STMicroelectronics, réserve de liquidités), voir détail dans la conversation et sur le tableau de bord (Story F4).
+
+## Story F4 — Tableau de bord de la simulation
+
+**Description** : publier un tableau de bord dédié à la simulation PEA — répartition des 10 000 € (graphique part-du-tout, méthode dataviz), fiche par valeur (cours, variation, secteur, lien avec les signaux du radar, niveau de risque), et rappel visible que ce n'est pas un conseil en investissement personnalisé.
+
+**Critères d'acceptation** :
+- [ ] Graphique de répartition (barre empilée horizontale, palette catégorielle à ordre fixe, étiquettes directes).
+- [ ] Une carte par valeur avec cours/variation réels sourcés (pas de chiffre inventé).
+- [ ] Bandeau d'avertissement non-conseil visible en haut de page.
+- [ ] Lien vers le tableau de bord projet.
+
+**Statut** : ✅ publiée le 2026-07-26.
