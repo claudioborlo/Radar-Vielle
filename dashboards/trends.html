@@ -72,14 +72,23 @@ __METRICS_DATA_END__-->
   .data-table tr:last-child td { border-bottom: none; }
   footer { font-family: var(--mono); font-size: 0.7rem; color: var(--text-faint); text-align: center; padding-top: 0.5rem; border-top: 1px solid var(--border); }
   footer a { color: var(--text-faint); }
+  .header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+  .header-links { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; }
+  .nav-link { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--blue); text-decoration: none; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 0.4rem 0.7rem; box-shadow: var(--shadow); }
+  .nav-link:hover { background: var(--blue-wash); }
 </style>
 
 <div class="app">
   <div class="wrap">
     <header class="header">
-      <p class="eyebrow">Radar-Vielle · Epic E</p>
-      <h1>Analyse de tendances</h1>
-      <p class="sub">Historique structuré des 6 sujets, republié automatiquement chaque jour par la routine</p>
+      <div>
+        <p class="eyebrow">Radar-Vielle · Epic E</p>
+        <h1>Analyse de tendances</h1>
+        <p class="sub">Historique structuré des 6 sujets, republié automatiquement chaque jour par la routine</p>
+      </div>
+      <div class="header-links">
+        <a class="nav-link" href="https://claude.ai/code/artifact/9474ab38-0d8f-4edb-a24a-5385a7c2eaf0" target="_blank" rel="noopener">📡 Tableau de bord projet (alertes du jour)</a>
+      </div>
     </header>
 
     <div id="banner-note" class="banner"></div>
