@@ -7,7 +7,7 @@
     --amber: #c9791a; --amber-bg: #fbeed9;
     --good: #006300; --critical: #d03b3b;
     --warn-bg: rgba(250,178,25,0.16); --serious-bg: rgba(236,131,90,0.14); --crit-bg: rgba(208,59,59,0.12);
-    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #008300; --c7: #4a3aa7;
+    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #008300; --c7: #4a3aa7; --c8: #e34948;
     --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
@@ -18,7 +18,7 @@
       --border: rgba(255,255,255,0.10); --grid: #2c2c2a;
       --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
       --good: #0ca30c; --critical: #d03b3b;
-      --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #008300; --c7: #9085e9;
+      --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #008300; --c7: #9085e9; --c8: #e66767;
     }
   }
   :root[data-theme="dark"] {
@@ -27,7 +27,7 @@
     --border: rgba(255,255,255,0.10); --grid: #2c2c2a;
     --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
     --good: #0ca30c; --critical: #d03b3b;
-    --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #008300; --c7: #9085e9;
+    --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #008300; --c7: #9085e9; --c8: #e66767;
   }
   :root[data-theme="light"] {
     --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #eef1f6;
@@ -35,7 +35,7 @@
     --border: rgba(11,11,11,0.10); --grid: #e1e0d9;
     --amber: #c9791a; --amber-bg: #fbeed9;
     --good: #006300; --critical: #d03b3b;
-    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #008300; --c7: #4a3aa7;
+    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #008300; --c7: #4a3aa7; --c8: #e34948;
   }
   * { box-sizing: border-box; }
   body { margin: 0; }
@@ -71,6 +71,7 @@
   .risk-badge { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.2rem 0.5rem; border-radius: 999px; white-space: nowrap; }
   .risk-modere { background: var(--warn-bg); color: #9a6a00; }
   .risk-eleve { background: var(--crit-bg); color: var(--critical); }
+  .risk-tres-eleve { background: var(--critical); color: #fff; }
   .stock-amount { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; }
   .stock-pct { color: var(--text-faint); font-size: 0.8rem; font-weight: 500; }
   .stock-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.3rem 0; border-top: 1px dashed var(--grid); }
@@ -149,7 +150,7 @@
 
     <section>
       <p class="section-title">Répartition des 10 000 €</p>
-      <p class="section-sub">7 lignes — barre empilée, ordre fixe · rééquilibrage du 26/07/2026 : STMicroelectronics allégée (1000 € → 500 €) après un drawdown de ~25% depuis début juillet, capital réparti sur les 5 autres valeurs</p>
+      <p class="section-sub">8 lignes — barre empilée, ordre fixe · rééquilibrages du 26/07/2026 : STMicroelectronics allégée (1000 € → 500 €, capital réparti sur les 5 autres valeurs) puis ajout de Drone Volt (300 €, financé par la réserve de liquidités) pour une vraie exposition pure-play au thème Drone</p>
       <div class="card alloc-card">
         <div class="alloc-bar" id="alloc-bar"></div>
         <div class="alloc-legend" id="alloc-legend"></div>
@@ -182,7 +183,12 @@
 
 <script>
 (function () {
-  var colors = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)", "var(--c6)", "var(--c7)"];
+  var colors = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)", "var(--c6)", "var(--c7)", "var(--c8)"];
+  function riskClass(risk) {
+    if (risk === "très élevé") return "tres-eleve";
+    if (risk === "élevé") return "eleve";
+    return "modere";
+  }
   var positions = [
     { name: "Thales", sector: "Défense / cybersécurité", amount: 2118, link: "Budgets militaires en hausse, tensions géopolitiques", risk: "modéré",
       price: "236,40 €", priceNum: 236.40, entryPrice: 236.40, entryDate: "2026-07-26", change: "-0,80 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Carnet de commandes record 53,3 Md€ (2025) · capitalisation 48,68 Md€ · commandes T2 en forte hausse (radars Roumanie, accord-cadre Rheinmetall) · allocation renforcée le 26/07/2026 (rééquilibrage, voir STMicroelectronics)",
@@ -202,14 +208,17 @@
     { name: "STMicroelectronics", sector: "Semi-conducteurs", amount: 500, link: "Revenus datacenter IA visant ~1 Md$ en 2026 (objectif relevé au T2)", risk: "élevé",
       price: "46,77 €", priceNum: 46.77, entryPrice: 46.77, entryDate: "2026-07-26", change: "-2,46 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Allégée de 1000 € à 500 € le 26/07/2026 : le T2 2026 a battu le consensus (BPA 0,31$, retour au bénéfice, objectifs datacenter IA relevés à >1 Md$ 2026 / >2 Md$ 2027) mais la guidance T3 et la pression sur les marges ont fait chuter le titre de ~25% depuis le 01/07 ; analystes majoritairement \"Hold\", thèse IA/datacenter toujours valide mais risque à court terme confirmé — capital libéré réparti sur les 5 autres valeurs",
       source: "https://www.boursorama.com/bourse/actualites/le-benefice-de-stmicroelectronics-est-inferieur-aux-previsions-l-action-recule-de-14-9cb711afd881fda84cd82bbd1d3c8e00" },
-    { name: "Réserve de liquidités", sector: "—", amount: 500, link: "Observer Dassault Systèmes avant d'entrer (volatilité IA)", risk: "—",
-      price: "—", priceNum: null, entryPrice: null, entryDate: null, change: "—", detail: "Dassault Systèmes a chuté fortement sur craintes de disruption IA (Anthropic/Prometheus) — à surveiller plutôt qu'à acheter tout de suite",
+    { name: "Drone Volt", sector: "Drones civils / défense", amount: 300, link: "Seul pur-play drone français coté identifié pour le radar (thème Robot/Drone)", risk: "très élevé",
+      price: "0,3648 €", priceNum: 0.3648, entryPrice: 0.3648, entryDate: "2026-07-26", change: "+0,50 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Ajoutée le 26/07/2026 : marge brute passée de 13% à 37% (2024→2025) après recentrage sur le cœur de métier, présence Eurosatory 2026, mais perte nette -13,8 M€ en 2025 et dilution en cours (77,5M→~85,9M actions) ; rentabilité visée 2027 seulement. Position volontairement limitée (financée par la réserve de liquidités) compte tenu du risque.",
+      source: "https://www.boursorama.com/cours/1rPALDRV/" },
+    { name: "Réserve de liquidités", sector: "—", amount: 200, link: "Observer Dassault Systèmes avant d'entrer (volatilité IA)", risk: "—",
+      price: "—", priceNum: null, entryPrice: null, entryDate: null, change: "—", detail: "Réduite de 500 € à 200 € le 26/07/2026 pour financer l'ajout de Drone Volt. Dassault Systèmes a chuté fortement sur craintes de disruption IA (Anthropic/Prometheus) — à surveiller plutôt qu'à acheter tout de suite",
       source: "https://www.bloomberg.com/news/articles/2026-02-11/dassault-systemes-shares-plunge-most-since-2002-on-weak-outlook" }
   ];
 
   // __PORTFOLIO_HISTORY_DATA_START__
   var portfolioHistory = [
-  {"date":"2026-07-26","perf_pct":0.0,"prices":{"Thales":236.40,"Dassault Aviation":299.20,"Valeo":13.73,"Safran":329.80,"Capgemini":89.88,"STMicroelectronics":46.77}}
+  {"date":"2026-07-26","perf_pct":0.0,"prices":{"Thales":236.40,"Dassault Aviation":299.20,"Valeo":13.73,"Safran":329.80,"Capgemini":89.88,"STMicroelectronics":46.77,"Drone Volt":0.3648}}
 ];
   // __PORTFOLIO_HISTORY_DATA_END__
 
@@ -259,7 +268,7 @@
     card.style.borderTop = "3px solid " + colors[i];
     card.innerHTML =
       '<div class="stock-top"><div><p class="stock-name">' + p.name + '</p><p class="stock-sector">' + p.sector + '</p></div>' +
-      (p.risk !== "—" ? '<span class="risk-badge risk-' + (p.risk === "élevé" ? "eleve" : "modere") + '">' + p.risk + '</span>' : '') + '</div>' +
+      (p.risk !== "—" ? '<span class="risk-badge risk-' + riskClass(p.risk) + '">' + p.risk + '</span>' : '') + '</div>' +
       '<div><span class="stock-amount">' + p.amount.toLocaleString("fr-FR") + ' €</span> <span class="stock-pct">(' + pct + '%)</span></div>' +
       (!isCash ? '<div class="stock-row"><span>Cours</span><b>' + p.price + '</b></div><div class="stock-row"><span>Variation</span><b>' + p.change + '</b></div>' + perfRow : '') +
       '<p class="stock-link">' + p.detail + '</p>' +

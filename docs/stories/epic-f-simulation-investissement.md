@@ -76,3 +76,20 @@ Ajouté le 2026-07-26, à la demande de l'utilisateur : simuler une allocation d
 **Décision (validée par l'utilisateur)** : allégement de STMicroelectronics de 1000 € à 500 €. Capital libéré (500 €) réparti au prorata sur les 5 autres valeurs : Thales 2000→2118 €, Dassault Aviation 2000→2118 €, Valeo 1500→1588 €, Safran 1500→1588 €, Capgemini 1500→1588 €. Réserve de liquidités inchangée (500 €). Le rééquilibrage a lieu le jour même de l'entrée (`entryDate` = 2026-07-26 pour toutes les positions), donc aucun impact sur le calcul de performance depuis l'entrée ni sur l'historique déjà écrit dans `docs/portfolio-history.json` (toujours à J0, perf 0%).
 
 **Statut** : ✅ appliquée le 2026-07-26 — dashboard mis à jour et republié ; ne remplace pas le bilan formel du 09/08 (Story F6 ci-dessus), qui reste dû avec revérification complète des 6 thèses.
+
+### Story F7 — Ajout d'une exposition pure-play au thème Drone
+
+**Déclencheur** : remarque de l'utilisateur (2026-07-26) — aucune des 6 valeurs de la simulation n'est un pur acteur drone (exposition seulement indirecte via Thales/Valeo/Dassault Aviation). Recherche de véritables sociétés françaises cotées spécialisées :
+- **Exail Technologies (EXA, ex-Groupe Gorgé)** — le candidat le plus sérieux (drones marins DriX-H9, sous-marins K-STER, entrée au SBF 120 sept. 2025) mais **écarté** : Thales a annoncé son rachat le 06/07/2026 (3,9 Md€, 134 €/action, +44% de prime), titre à 124,20 € le 25/07 → situation d'arbitrage de fusion à horizon 2028, pas une thèse de croissance, et exposition déjà redondante avec Thales détenu par ailleurs.
+- **Tonner Drones (ALTD)** — écarté : nano-cap (~19 M€), holding de participations (Diodon, Elistair, Donecle) plutôt que fabricant opérant, cours ~0,03 €, trop spéculatif/illiquide.
+- **Drone Volt (ALDRV, Euronext Growth)** — retenu : seul vrai pur-play drone opérant identifié. Fabricant français de drones civils/sécurité/défense, présent à Eurosatory 2026, marge brute passée de 13% à 37% (2024→2025) après recentrage, mais perte nette -13,8 M€ en 2025 et dilution en cours (77,5M→~85,9M actions en base diluée). Cours 0,3648 € (24/07/2026, dernière séance).
+
+**Décision (validée par l'utilisateur)** : ajout de Drone Volt pour 300 €, financé par une réduction de la réserve de liquidités (500 € → 200 €), avec le badge de risque le plus élevé du portefeuille (« très élevé », distinct visuellement du badge « élevé » de STMicroelectronics). Allocation finale : 8 lignes, toujours 10 000 € au total.
+
+**Critères d'acceptation** :
+- [x] Position ajoutée avec `entryPrice`/`entryDate` réels et sourcés (pas de cours inventé).
+- [x] Risque affiché distinctement des autres lignes (badge « très élevé »).
+- [x] Alternatives sérieuses (Exail, Tonner Drones) documentées avec la raison de leur rejet, pas juste ignorées.
+- [ ] Suivi quotidien (Story F5/F6) étendu à Drone Volt — routine mise à jour en conséquence, à valider sur le prochain run réel.
+
+**Statut** : ✅ ajoutée le 2026-07-26 — dashboard republié, routine mise à jour (7 valeurs suivies désormais), `docs/portfolio-history.json` synchronisé.
