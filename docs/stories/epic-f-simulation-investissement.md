@@ -113,3 +113,21 @@ Ajouté le 2026-07-26, à la demande de l'utilisateur : simuler une allocation d
 - [ ] Suivi quotidien (Story F5/F6) étendu à Parrot — routine mise à jour, à valider sur le prochain run réel.
 
 **Statut** : ✅ ajoutée le 2026-07-26 — dashboard republié, routine mise à jour (8 valeurs suivies désormais), `docs/portfolio-history.json` synchronisé.
+
+### Story F9 — Portefeuille dédié « pure drone » (10 000 €, hors PEA diversifié)
+
+**Déclencheur** : demande de l'utilisateur (2026-07-26) — construire un portefeuille de 10 000 € distinct, concentré uniquement sur les sociétés produisant des drones en Europe avec un potentiel de hausse important à quelques mois (contrairement à la simulation PEA de la Story F1-F8, diversifiée sur plusieurs thèmes du radar).
+
+**Recherche et sélection** : 6 valeurs retenues, pondérées par conviction de hausse court terme — Embention (Espagne, 2500€, avionique/IA embarquée drones & eVTOL, IPO récente sur Euronext Growth le 10/07/2026), Rheinmetall (Allemagne, 2000€, contrat Bundeswehr munitions rôdeuses FV-014, consensus analystes +63,6% à 12 mois), Parrot (France, 2000€, pure-play drones civils/défense, commandes OTAN Anafi UKR), Drone Volt (France, 1500€, seul fabricant opérant pur-play français coté, risque très élevé), Leonardo (Italie, 1500€, gamme Falco EVO + catalyseur GCAP), Tonner Drones (France, 500€, satellite ultra-spéculatif, risque extrême). Candidats écartés documentés sur le dashboard : Exail Technologies (arbitrage de fusion Thales à horizon 2028, pas un profil court terme), WB Group (pas encore cotée), Quantum Systems/Helsing/Tekever (non cotées).
+
+**Publication** : dashboard dédié `dashboards/simulation-drones.html`, publié à https://claude.ai/code/artifact/fa0a9505-d3ff-40be-bb57-a5abef24f6f5 (répartition, fiche par valeur, candidats écartés, bandeau non-conseil).
+
+**Rebasage rétroactif au 01/07/2026** (demande de l'utilisateur, même jour) : la simulation a été régénérée avec date de départ le 01/07/2026 au lieu du 26/07/2026, pour illustrer la performance depuis le début du mois. Cours d'entrée du 01/07/2026 sourcés individuellement via l'historique Boursorama (Rheinmetall 1050,60€, Parrot 10,16€, Drone Volt 0,37€, Tonner Drones 0,03€, Leonardo 48,76€) et via l'historique Investing.com pour Embention (40,00€, Boursorama ne couvrant pas son historique sur Euronext Access). Résultat : portefeuille à +2,91% (10 291€) au 24-26/07/2026, tiré par Embention (+12,50%) et Leonardo (+6,81%), freiné par Tonner Drones (-9,33%) et de légers replis sur Parrot/Rheinmetall/Drone Volt.
+
+**Critères d'acceptation** :
+- [x] Chaque cours d'entrée (01/07/2026) sourcé individuellement, aucun chiffre inventé.
+- [x] Performance par valeur et performance globale pondérée affichées sur le dashboard.
+- [x] Avertissement non-conseil + précision sur le caractère rétroactif de la date de départ.
+- [ ] Suivi quotidien automatique (comme F5/F6) — pas encore mis en place pour ce portefeuille ; à faire si demandé.
+
+**Statut** : ✅ publiée le 2026-07-26 — pas de suivi quotidien automatique pour l'instant (portefeuille figé à la demande initiale, pas intégré à la routine cloud).
