@@ -112,7 +112,8 @@
     padding: 0.3rem 0.55rem; border-radius: 6px; white-space: nowrap; z-index: 5;
     box-shadow: var(--shadow);
   }
-  .axis-note { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.68rem; color: var(--text-mute); margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid var(--grid); }
+  .axis-note { display: grid; grid-template-columns: 8.5rem 1fr; align-items: center; gap: 0.75rem; font-family: var(--mono); font-size: 0.68rem; color: var(--text-mute); margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid var(--grid); }
+  .axis-ticks { display: flex; justify-content: space-between; }
 
   .table-wrap { margin-top: 1.1rem; overflow-x: auto; }
   table.data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
@@ -159,7 +160,7 @@
           <span class="legend-item"><span class="swatch" style="background:var(--blue);"></span>Hausse</span>
         </div>
         <div id="chart"></div>
-        <div class="axis-note"><span>-8 %</span><span>0</span><span>+8 %</span></div>
+        <div class="axis-note"><span></span><div class="axis-ticks"><span>-10 %</span><span>0</span><span>+10 %</span></div></div>
 
         <div class="table-wrap">
           <table class="data-table">
@@ -194,7 +195,7 @@
     { name: "Dow Jones", value: 0.39, tip: "Dow Jones : +0,39 %" }
   ];
 
-  var scale = 8; // symmetric half-scale in %
+  var scale = 10; // symmetric half-scale in %
   var chart = document.getElementById("chart");
   var tbody = document.getElementById("table-body");
 

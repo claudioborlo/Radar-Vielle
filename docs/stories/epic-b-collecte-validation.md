@@ -32,6 +32,18 @@ Référence : [architecture.md](../architecture.md) §2, [prd.md](../prd.md) FR1
 
 **Statut** : ✅ appliquée le 2026-07-26 — 3 dashboards republiés (tableau de bord projet, Alertes Bourse corrigé, Alertes & Radar Drone nouveau), liens croisés ajoutés entre eux.
 
+### Correction complémentaire (2026-07-26) — repère d'axe désaligné de la barre
+
+**Déclencheur** : remarque de l'utilisateur — malgré la correction précédente (« +2 % » → « +8 % »), des barres semblaient toujours dépasser visuellement le repère d'axe.
+
+**Diagnostic réel** : chaque ligne du graphique utilise une grille à deux colonnes (`8.5rem` pour le libellé + `1fr` pour la piste de la barre), mais le repère d'axe sous le graphique (`-8 % / 0 / +8 %`) était un simple `flex` sur toute la largeur de la carte, sans tenir compte de la colonne de libellé. Le tick « 0 » du repère ne tombait donc pas à l'aplomb de la ligne de base réelle des barres (décalée à droite par la colonne de libellé), donnant l'impression que les barres dépassaient l'axe alors que c'est le repère qui était mal aligné.
+
+**Corrections appliquées** (sur le tableau de bord projet et Alertes Bourse) :
+- Le repère d'axe utilise désormais la même grille à deux colonnes que les lignes du graphique, pour que « 0 » tombe exactement sur la ligne de base et que les bords gauche/droit correspondent aux extrémités réelles des pistes.
+- Échelle relevée de ±8% à ±10% pour laisser une marge visuelle au-dessus de la plus forte variation observée (Intel, -7,88%), au lieu de l'amener presque au bord de la piste.
+
+**Statut** : ✅ corrigée le 2026-07-26 — 2 dashboards republiés (tableau de bord projet, Alertes Bourse).
+
 **Critères d'acceptation** (à vérifier sur un digest réel produit) :
 - [ ] Chaque sujet mentionné dans le digest cite au moins une source, et cette source a été effectivement récupérée (pas de résumé basé sur un titre/snippet seul).
 - [ ] Une source inaccessible (paywall/erreur/vide) est signalée explicitement, jamais résumée (FR3 — règle absolue).
