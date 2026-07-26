@@ -150,7 +150,7 @@
 
     <section>
       <p class="section-title">Répartition des 10 000 €</p>
-      <p class="section-sub">8 lignes — barre empilée, ordre fixe · rééquilibrages du 26/07/2026 : STMicroelectronics allégée (1000 € → 500 €, capital réparti sur les 5 autres valeurs) puis ajout de Drone Volt (300 €, financé par la réserve de liquidités) pour une vraie exposition pure-play au thème Drone</p>
+      <p class="section-sub">9 lignes — barre empilée, ordre fixe · rééquilibrages du 26/07/2026 : STMicroelectronics allégée (1000 € → 500 €), ajout de Drone Volt (300 €) puis de Parrot (200 €) pour une double exposition pure-play au thème Drone — réserve de liquidités intégralement déployée (0 €)</p>
       <div class="card alloc-card">
         <div class="alloc-bar" id="alloc-bar"></div>
         <div class="alloc-legend" id="alloc-legend"></div>
@@ -211,14 +211,17 @@
     { name: "Drone Volt", sector: "Drones civils / défense", amount: 300, link: "Seul pur-play drone français coté identifié pour le radar (thème Robot/Drone)", risk: "très élevé",
       price: "0,3648 €", priceNum: 0.3648, entryPrice: 0.3648, entryDate: "2026-07-26", change: "+0,50 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Ajoutée le 26/07/2026 : marge brute passée de 13% à 37% (2024→2025) après recentrage sur le cœur de métier, présence Eurosatory 2026, mais perte nette -13,8 M€ en 2025 et dilution en cours (77,5M→~85,9M actions) ; rentabilité visée 2027 seulement. Position volontairement limitée (financée par la réserve de liquidités) compte tenu du risque.",
       source: "https://www.boursorama.com/cours/1rPALDRV/" },
-    { name: "Réserve de liquidités", sector: "—", amount: 200, link: "Observer Dassault Systèmes avant d'entrer (volatilité IA)", risk: "—",
-      price: "—", priceNum: null, entryPrice: null, entryDate: null, change: "—", detail: "Réduite de 500 € à 200 € le 26/07/2026 pour financer l'ajout de Drone Volt. Dassault Systèmes a chuté fortement sur craintes de disruption IA (Anthropic/Prometheus) — à surveiller plutôt qu'à acheter tout de suite",
+    { name: "Parrot", sector: "Drones professionnels / défense", amount: 200, link: "Deuxième pur-play drone, plus liquide et établi que Drone Volt", risk: "élevé",
+      price: "10,00 €", priceNum: 10.00, entryPrice: 10.00, entryDate: "2026-07-26", change: "+0,10 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Ajoutée le 26/07/2026 : recentrée depuis 2019 sur les drones professionnels/militaires (Anafi AI), commandes OTAN récentes (Anafi UKR, livraisons dès T1 2026). Capitalisation ~309 M€, membre du CAC Mid & Small, liquidité normale (~22-28k titres/jour) — plus solide que Drone Volt mais toujours une petite valeur.",
+      source: "https://www.boursorama.com/cours/1rPPARRO/" },
+    { name: "Réserve de liquidités", sector: "—", amount: 0, link: "Observer Dassault Systèmes avant d'entrer (volatilité IA)", risk: "—",
+      price: "—", priceNum: null, entryPrice: null, entryDate: null, change: "—", detail: "Intégralement déployée le 26/07/2026 (200 € → 0 €) pour financer l'ajout de Parrot. L'idée Dassault Systèmes reste une simple observation, sans capital dédié pour l'instant — à réévaluer si de nouvelles liquidités se dégagent",
       source: "https://www.bloomberg.com/news/articles/2026-02-11/dassault-systemes-shares-plunge-most-since-2002-on-weak-outlook" }
   ];
 
   // __PORTFOLIO_HISTORY_DATA_START__
   var portfolioHistory = [
-  {"date":"2026-07-26","perf_pct":0.0,"prices":{"Thales":236.40,"Dassault Aviation":299.20,"Valeo":13.73,"Safran":329.80,"Capgemini":89.88,"STMicroelectronics":46.77,"Drone Volt":0.3648}}
+  {"date":"2026-07-26","perf_pct":0.0,"prices":{"Thales":236.40,"Dassault Aviation":299.20,"Valeo":13.73,"Safran":329.80,"Capgemini":89.88,"STMicroelectronics":46.77,"Drone Volt":0.3648,"Parrot":10.00}}
 ];
   // __PORTFOLIO_HISTORY_DATA_END__
 
@@ -237,27 +240,34 @@
     return (v > 0 ? "+" : "") + v.toFixed(2).replace(".", ",") + " %";
   }
 
+  // La palette catégorielle (8 teintes validées) est réservée aux lignes réellement investies ;
+  // une 9e teinte n'est jamais créée (skill dataviz) — la réserve à 0 € reçoit une couleur neutre.
+  var colorIndex = 0;
+  positions.forEach(function (p) {
+    p.color = (p.name === "Réserve de liquidités") ? "var(--text-faint)" : colors[colorIndex++];
+  });
+
   var allocBar = document.getElementById("alloc-bar");
   var allocLegend = document.getElementById("alloc-legend");
-  positions.forEach(function (p, i) {
+  positions.forEach(function (p) {
     var pct = (p.amount / total * 100);
     var seg = document.createElement("div");
     seg.className = "alloc-seg";
     seg.style.width = pct + "%";
-    seg.style.background = colors[i];
+    seg.style.background = p.color;
     seg.textContent = pct >= 8 ? Math.round(pct) + "%" : "";
     seg.title = p.name + " — " + p.amount.toLocaleString("fr-FR") + " € (" + pct.toFixed(1) + "%)";
     allocBar.appendChild(seg);
 
     var item = document.createElement("div");
     item.className = "alloc-legend-item";
-    item.innerHTML = '<span class="alloc-swatch" style="background:' + colors[i] + ';"></span>' + p.name + ' <b>' + p.amount.toLocaleString("fr-FR") + ' €</b>';
+    item.innerHTML = '<span class="alloc-swatch" style="background:' + p.color + ';"></span>' + p.name + ' <b>' + p.amount.toLocaleString("fr-FR") + ' €</b>';
     allocLegend.appendChild(item);
   });
 
   var stockGrid = document.getElementById("stock-grid");
   var histBody = document.getElementById("history-table-body");
-  positions.forEach(function (p, i) {
+  positions.forEach(function (p) {
     var pct = (p.amount / total * 100).toFixed(1);
     var isCash = p.name === "Réserve de liquidités";
     var perf = perfPct(p);
@@ -265,7 +275,7 @@
       '<div class="stock-row"><span>Depuis simulation (' + p.entryDate.slice(8, 10) + '/' + p.entryDate.slice(5, 7) + ')</span><b class="' + (perf >= 0 ? "perf-good" : "perf-bad") + '">' + fmtPct(perf) + '</b></div>';
     var card = document.createElement("div");
     card.className = "card stock-card";
-    card.style.borderTop = "3px solid " + colors[i];
+    card.style.borderTop = "3px solid " + p.color;
     card.innerHTML =
       '<div class="stock-top"><div><p class="stock-name">' + p.name + '</p><p class="stock-sector">' + p.sector + '</p></div>' +
       (p.risk !== "—" ? '<span class="risk-badge risk-' + riskClass(p.risk) + '">' + p.risk + '</span>' : '') + '</div>' +

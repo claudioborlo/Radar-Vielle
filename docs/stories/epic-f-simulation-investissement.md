@@ -93,3 +93,23 @@ Ajouté le 2026-07-26, à la demande de l'utilisateur : simuler une allocation d
 - [ ] Suivi quotidien (Story F5/F6) étendu à Drone Volt — routine mise à jour en conséquence, à valider sur le prochain run réel.
 
 **Statut** : ✅ ajoutée le 2026-07-26 — dashboard republié, routine mise à jour (7 valeurs suivies désormais), `docs/portfolio-history.json` synchronisé.
+
+### Story F8 — Deuxième ligne pure-play Drone (Parrot)
+
+**Déclencheur** : demande de l'utilisateur (2026-07-26) — rechercher d'autres sociétés développant des drones en Europe et en France, cotées en bourse, au-delà de Drone Volt.
+
+**Recherche menée** (WebSearch + vérification directe des cotations) :
+- **France** : Parrot SA (PARRO, Euronext Paris) — toujours cotée et liquide (10,00 €, capi ~309 M€, indice CAC Mid & Small, ~22-28k titres/jour), recentrée depuis 2019 sur les drones professionnels/militaires (Anafi AI), commandes OTAN récentes (Anafi UKR, livraisons dès T1 2026). Novadem, Hexadrone, Delair, Survey Copter : non cotées (privées).
+- **Europe** : Leonardo (LDO, Milan) et Rheinmetall (RHM, Francfort) ont de vraies activités drones (Falco EVO ; munitions rôdeuses FV-014, contrat-cadre Bundeswehr multi-milliards du 22/04/2026) mais ce sont de gros conglomérats défense généralistes, pas des pur-plays. Quantum Systems, Wingcopter, Destinus (Allemagne) sont les pur-plays les plus prometteurs mais **non cotés** (IPO au plus tôt 2027 ; Quantum Systems a levé 1,2 Md$ le 02/07/2026 à ~8 Md$ de valorisation).
+
+**Décision (validée par l'utilisateur)** : ajout de Parrot pour 200 €, en complément de Drone Volt (pas en remplacement) — financé par le déploiement intégral de la réserve de liquidités (200 € → 0 €). Le portefeuille compte désormais deux lignes pure-play Drone : une spéculative (Drone Volt) et une plus établie/liquide (Parrot).
+
+**Point de méthode dataviz** : l'ajout d'une 9ᵉ ligne n'a pas créé de 9ᵉ teinte catégorielle (règle du skill : « une 9e série ne devient jamais une teinte générée »). La réserve de liquidités, désormais à 0 €, est sortie de la palette catégorielle (couleur neutre `--text-faint`) — les 8 teintes validées restent réservées aux 8 lignes réellement investies.
+
+**Critères d'acceptation** :
+- [x] Position ajoutée avec cours réel et sourcé (10,00 €, 24/07/2026).
+- [x] Alternatives sérieuses (Leonardo, Rheinmetall, Quantum Systems...) documentées avec la raison de leur non-inclusion.
+- [x] Palette catégorielle respectée (pas de 9e teinte inventée).
+- [ ] Suivi quotidien (Story F5/F6) étendu à Parrot — routine mise à jour, à valider sur le prochain run réel.
+
+**Statut** : ✅ ajoutée le 2026-07-26 — dashboard republié, routine mise à jour (8 valeurs suivies désormais), `docs/portfolio-history.json` synchronisé.
