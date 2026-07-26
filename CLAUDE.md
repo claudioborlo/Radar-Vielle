@@ -57,3 +57,7 @@ Niveau intermédiaire sur l'ensemble des domaines suivis. Ne pas réexpliquer le
 ### 6. Marché immobilier (Paris)
 - **Angle** : évolution du prix des appartements à Paris, dans une optique de revente profitable
 - **Déclencheur** : variation significative des prix (données notaires/INSEE) ou tendance de marché actionnable
+
+### 7. Cryptomonnaies
+- **Angle** : suivi investissement sur les principales cryptomonnaies (Bitcoin, Ethereum), y compris l'actualité réglementaire (UE/MiCA, USA/SEC)
+- **Déclencheur** : variation ≥ 5% sur Bitcoin ou Ethereum en 24h (seuil relevé par rapport au générique, compte tenu de la volatilité structurelle du marché crypto), ou décision réglementaire majeure (adoption/rejet d'ETF, nouvelle règle UE/USA, faillite d'un acteur majeur)

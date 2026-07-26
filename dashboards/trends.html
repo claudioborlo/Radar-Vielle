@@ -1,6 +1,6 @@
 <!--__METRICS_DATA_START__
 [
-  {"date":"2026-07-26","bourse":{"triggered":true,"max_move_pct":-2.15},"techia":{"triggered":true},"drone":{"triggered":true},"climat":{"triggered":true},"matieres":{"triggered":true,"or_usd":4051.70,"cuivre_usd":6.30},"immobilier":{"triggered":false,"prix_m2_eur":9580}}
+  {"date":"2026-07-26","bourse":{"triggered":true,"max_move_pct":-2.15},"techia":{"triggered":true},"drone":{"triggered":true},"climat":{"triggered":true},"matieres":{"triggered":true,"or_usd":4051.70,"cuivre_usd":6.30},"immobilier":{"triggered":false,"prix_m2_eur":9580},"crypto":{"triggered":false,"btc_usd":64322.24,"eth_usd":1878.00}}
 ]
 __METRICS_DATA_END__-->
 <style>
@@ -84,7 +84,7 @@ __METRICS_DATA_END__-->
       <div>
         <p class="eyebrow">Radar-Vielle · Epic E</p>
         <h1>Analyse de tendances</h1>
-        <p class="sub">Historique structuré des 6 sujets, republié automatiquement chaque jour par la routine</p>
+        <p class="sub">Historique structuré des 7 sujets, republié automatiquement chaque jour par la routine</p>
       </div>
       <div class="header-links">
         <a class="nav-link" href="https://claude.ai/code/artifact/9474ab38-0d8f-4edb-a24a-5385a7c2eaf0" target="_blank" rel="noopener">📡 Tableau de bord projet (alertes du jour)</a>
@@ -112,7 +112,7 @@ __METRICS_DATA_END__-->
         <div class="table-wrap">
           <table class="data-table">
             <caption>Historique complet (vue tableau, accessibilité)</caption>
-            <thead><tr><th>Date</th><th>Bourse</th><th>Tech/IA</th><th>Drone</th><th>Climat</th><th>Or ($)</th><th>Cuivre ($)</th><th>Immo (€/m²)</th></tr></thead>
+            <thead><tr><th>Date</th><th>Bourse</th><th>Tech/IA</th><th>Drone</th><th>Climat</th><th>Or ($)</th><th>Cuivre ($)</th><th>Immo (€/m²)</th><th>BTC ($)</th><th>ETH ($)</th></tr></thead>
             <tbody id="history-table-body"></tbody>
           </table>
         </div>
@@ -131,7 +131,7 @@ __METRICS_DATA_END__-->
   // by replacing the JSON block between __METRICS_DATA_START__ and __METRICS_DATA_END__
   // without touching the rendering logic below.
   var history = [
-    {"date":"2026-07-26","bourse":{"triggered":true,"max_move_pct":-2.15},"techia":{"triggered":true},"drone":{"triggered":true},"climat":{"triggered":true},"matieres":{"triggered":true,"or_usd":4051.70,"cuivre_usd":6.30},"immobilier":{"triggered":false,"prix_m2_eur":9580}}
+    {"date":"2026-07-26","bourse":{"triggered":true,"max_move_pct":-2.15},"techia":{"triggered":true},"drone":{"triggered":true},"climat":{"triggered":true},"matieres":{"triggered":true,"or_usd":4051.70,"cuivre_usd":6.30},"immobilier":{"triggered":false,"prix_m2_eur":9580},"crypto":{"triggered":false,"btc_usd":64322.24,"eth_usd":1878.00}}
   ];
 
   var banner = document.getElementById("banner-note");
@@ -169,7 +169,9 @@ __METRICS_DATA_END__-->
     { key: "bourse-move", label: "Bourse — mouvement max du jour", unit: " %", decimals: 2, get: function (d) { return d.bourse && d.bourse.max_move_pct; } },
     { key: "or", label: "Or", unit: " $/once", decimals: 2, get: function (d) { return d.matieres && d.matieres.or_usd; } },
     { key: "cuivre", label: "Cuivre", unit: " $/lb", decimals: 2, get: function (d) { return d.matieres && d.matieres.cuivre_usd; } },
-    { key: "immo", label: "Immobilier Paris", unit: " €/m²", decimals: 0, get: function (d) { return d.immobilier && d.immobilier.prix_m2_eur; } }
+    { key: "immo", label: "Immobilier Paris", unit: " €/m²", decimals: 0, get: function (d) { return d.immobilier && d.immobilier.prix_m2_eur; } },
+    { key: "btc", label: "Bitcoin (BTC)", unit: " $", decimals: 0, get: function (d) { return d.crypto && d.crypto.btc_usd; } },
+    { key: "eth", label: "Ethereum (ETH)", unit: " $", decimals: 0, get: function (d) { return d.crypto && d.crypto.eth_usd; } }
   ];
 
   var quantGrid = document.getElementById("quant-grid");
@@ -218,7 +220,9 @@ __METRICS_DATA_END__-->
       "<td>" + (d.climat && d.climat.triggered ? "✓" : "—") + "</td>" +
       "<td>" + fmt(d.matieres && d.matieres.or_usd, "", 2) + "</td>" +
       "<td>" + fmt(d.matieres && d.matieres.cuivre_usd, "", 2) + "</td>" +
-      "<td>" + fmt(d.immobilier && d.immobilier.prix_m2_eur, "", 0) + "</td>";
+      "<td>" + fmt(d.immobilier && d.immobilier.prix_m2_eur, "", 0) + "</td>" +
+      "<td>" + fmt(d.crypto && d.crypto.btc_usd, "", 0) + "</td>" +
+      "<td>" + fmt(d.crypto && d.crypto.eth_usd, "", 0) + "</td>";
     histBody.appendChild(tr);
   });
 })();

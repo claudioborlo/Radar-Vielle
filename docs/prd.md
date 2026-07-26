@@ -5,7 +5,7 @@ Référence périmètre/règles : [CLAUDE.md](../CLAUDE.md)
 
 ## 1. Exigences fonctionnelles (FR)
 
-- **FR1** — Le système collecte des informations pour chacun des 6 sujets suivis chaque jour : Bourse, Tech/IA/IT, Robot/Drone, Climat, Matières premières, Immobilier Paris.
+- **FR1** — Le système collecte des informations pour chacun des 7 sujets suivis chaque jour : Bourse, Tech/IA/IT, Robot/Drone, Climat, Matières premières, Immobilier Paris, Cryptomonnaies.
 - **FR2** — Un sujet n'apparaît dans le digest du jour que si son déclencheur spécifique (défini dans CLAUDE.md) est atteint. Pas de remplissage artificiel si rien ne déclenche.
 - **FR3** — Règle absolue : aucune source n'est résumée si elle n'a pas été effectivement récupérée et lue. Une source inaccessible (paywall, erreur, contenu vide) est signalée explicitement dans le digest, jamais extrapolée depuis le titre/URL.
 - **FR4** — Chaque sujet retenu respecte le format : 3-4 lignes max, contenant la tendance + l'explication du déclenchement de l'alerte.
@@ -22,7 +22,7 @@ Référence périmètre/règles : [CLAUDE.md](../CLAUDE.md)
 
 ## 2bis. Exigences ajoutées le 2026-07-26 (Epic E)
 
-- **FR7** — Chaque exécution quotidienne enregistre un point de données structuré (`docs/metrics-history.json`) pour les 6 sujets : valeurs chiffrées quand elles existent (Bourse, Matières premières, Immobilier), et statut déclencheur atteint/non atteint pour les 3 sujets qualitatifs (Tech/IA, Climat, Drone). Append-only, jamais réécrit rétroactivement.
+- **FR7** — Chaque exécution quotidienne enregistre un point de données structuré (`docs/metrics-history.json`) pour les 7 sujets : valeurs chiffrées quand elles existent (Bourse, Matières premières, Immobilier, Cryptomonnaies), et statut déclencheur atteint/non atteint pour les 3 sujets qualitatifs (Tech/IA, Climat, Drone). Append-only, jamais réécrit rétroactivement.
 - **FR8** — Un tableau de bord de tendances (page web publiée) est régénéré et republié automatiquement chaque jour à partir de l'historique complet de `docs/metrics-history.json`, à une URL stable (même lien republié, pas un nouveau lien chaque jour).
 
 ## 3. Sources retenues par sujet (accès libre uniquement)
@@ -35,6 +35,7 @@ Référence périmètre/règles : [CLAUDE.md](../CLAUDE.md)
 | 4. Climat | GIEC/IPCC, ADEME, Ministère de la Transition écologique, Carbone 4 |
 | 5. Matières premières | LBMA (or), LME (cuivre), World Gold Council, Trading Economics, Kitco |
 | 6. Immobilier Paris | Chambre des Notaires de Paris/Île-de-France, INSEE, base Immobilier.notaires.fr |
+| 7. Cryptomonnaies | CoinGecko, CoinDesk, Zonebourse (cotations crypto), communiqués officiels ESMA/AMF (UE) et SEC (USA) |
 
 > Cette liste est indicative, pas exhaustive : à chaque exécution, le radar peut chercher d'autres sources gratuites correspondant aux critères de CLAUDE.md (spécialisé/officiel, zones et langues autorisées).
 
