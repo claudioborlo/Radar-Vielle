@@ -35,3 +35,15 @@ Ajouté le 2026-07-26, à la demande de l'utilisateur : simuler une allocation d
 - [ ] Lien vers le tableau de bord projet.
 
 **Statut** : ✅ publiée le 2026-07-26.
+
+## Story F5 — Suivi quotidien automatique du portefeuille simulé
+
+**Description** : la routine quotidienne vérifie chaque jour le cours réel des 6 valeurs de la simulation (Thales, Dassault Aviation, Valeo, Safran, Capgemini, STMicroelectronics) et met à jour `dashboards/simulation-pea.html` en conséquence, republié à la même URL — pour transformer la simulation ponctuelle en suivi de performance dans le temps.
+
+**Critères d'acceptation** :
+- [ ] Chaque jour, la routine tente de récupérer le cours réel de chacune des 6 valeurs (WebSearch/WebFetch, sources gratuites).
+- [ ] Aucun cours n'est jamais inventé : une valeur non vérifiée aujourd'hui garde son dernier cours connu, avec une note explicite "(non mis à jour aujourd'hui)".
+- [ ] Le dashboard est republié à l'URL fixe existante (pas de nouveau lien).
+- [ ] Comme pour l'Epic E, un échec de cette étape (NFR5) n'empêche jamais l'écriture/le merge du digest quotidien principal.
+
+**Statut** : ⏳ instructions ajoutées à la routine le 2026-07-26 — à valider sur un run réel.
