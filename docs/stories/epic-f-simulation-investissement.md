@@ -41,9 +41,9 @@ Ajouté le 2026-07-26, à la demande de l'utilisateur : simuler une allocation d
 **Description** : la routine quotidienne vérifie chaque jour le cours réel des 6 valeurs de la simulation (Thales, Dassault Aviation, Valeo, Safran, Capgemini, STMicroelectronics) et met à jour `dashboards/simulation-pea.html` en conséquence, republié à la même URL — pour transformer la simulation ponctuelle en suivi de performance dans le temps.
 
 **Critères d'acceptation** :
-- [ ] Chaque jour, la routine tente de récupérer le cours réel de chacune des 6 valeurs (WebSearch/WebFetch, sources gratuites).
-- [ ] Aucun cours n'est jamais inventé : une valeur non vérifiée aujourd'hui garde son dernier cours connu, avec une note explicite "(non mis à jour aujourd'hui)".
-- [ ] Le dashboard est republié à l'URL fixe existante (pas de nouveau lien).
-- [ ] Comme pour l'Epic E, un échec de cette étape (NFR5) n'empêche jamais l'écriture/le merge du digest quotidien principal.
+- [x] Chaque jour, la routine tente de récupérer le cours réel de chacune des 6 valeurs (WebSearch/WebFetch, sources gratuites).
+- [x] Aucun cours n'est jamais inventé : une valeur non vérifiée aujourd'hui garde son dernier cours connu, avec une note explicite "(non mis à jour aujourd'hui)".
+- [x] Le dashboard est republié à l'URL fixe existante (pas de nouveau lien).
+- [ ] Comme pour l'Epic E, un échec de cette étape (NFR5) n'empêche jamais l'écriture/le merge du digest quotidien principal. *(non testé : aucun échec rencontré jusqu'ici pour observer le comportement de repli)*
 
-**Statut** : ⏳ instructions ajoutées à la routine le 2026-07-26 — à valider sur un run réel.
+**Statut** : ✅ validée le 2026-07-26 sur un run réel — commit `e9ab920` : cours réels des 6 valeurs récupérés via Boursorama. Marchés fermés le jour même (dimanche 26/07) : la routine a correctement daté les cours de la dernière séance (24/07) et signalé explicitement "(24/07, dernière séance — marché fermé le 26/07)" au lieu de présenter une fausse variation du jour — comportement exactement conforme à la règle absolue et au 2ᵉ critère ci-dessus.
