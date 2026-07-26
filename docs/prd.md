@@ -18,6 +18,12 @@ Référence périmètre/règles : [CLAUDE.md](../CLAUDE.md)
 - **NFR2** — Traçabilité : chaque affirmation du digest doit pouvoir être reliée à une source réellement consultée ce jour-là.
 - **NFR3** — Le périmètre (sujets, seuils, sources, langues, zones) reste piloté par CLAUDE.md et modifiable sans toucher au reste du système.
 - **NFR4** — L'historique (`digests/`) ne doit pas être écrasé : chaque jour produit un fichier distinct.
+- **NFR5** — La publication du tableau de bord de tendances (Epic E) est un post-traitement : si elle échoue, elle ne doit jamais empêcher ni annuler l'écriture/le merge du digest du jour, qui reste l'objectif prioritaire de l'exécution.
+
+## 2bis. Exigences ajoutées le 2026-07-26 (Epic E)
+
+- **FR7** — Chaque exécution quotidienne enregistre un point de données structuré (`docs/metrics-history.json`) pour les 6 sujets : valeurs chiffrées quand elles existent (Bourse, Matières premières, Immobilier), et statut déclencheur atteint/non atteint pour les 3 sujets qualitatifs (Tech/IA, Climat, Drone). Append-only, jamais réécrit rétroactivement.
+- **FR8** — Un tableau de bord de tendances (page web publiée) est régénéré et republié automatiquement chaque jour à partir de l'historique complet de `docs/metrics-history.json`, à une URL stable (même lien republié, pas un nouveau lien chaque jour).
 
 ## 3. Sources retenues par sujet (accès libre uniquement)
 
@@ -43,9 +49,8 @@ Référence périmètre/règles : [CLAUDE.md](../CLAUDE.md)
 - **Epic B — Collecte et validation des sources** : une story par sujet, avec vérification de lecture effective (FR3) avant tout résumé.
 - **Epic C — Génération du digest** : template respectant FR2 et FR4, assemblage des sujets retenus.
 - **Epic D — Historisation** : écriture dans `digests/YYYY-MM-DD.md` (FR5, NFR4).
+- **Epic E — Publication & analyse de tendances** (ajouté le 2026-07-26) : historisation structurée des métriques (FR7) et publication automatique quotidienne d'un tableau de bord de tendances (FR8). Voir [epic-e-publication-tendances.md](stories/epic-e-publication-tendances.md).
 
 ## 6. Hors périmètre (pour l'instant)
 
-- Visualisations graphiques (dataviz) — à revisiter si besoin plus tard.
-- Publication en page web (Artifact) — à revisiter si besoin plus tard.
 - Notifications push.

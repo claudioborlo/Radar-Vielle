@@ -12,4 +12,4 @@ Référence : [architecture.md](../architecture.md) §2, [prd.md](../prd.md) §5
 - Le résultat est écrit dans `digests/YYYY-MM-DD.md` (date du jour d'exécution).
 - Statut : **à faire** — nécessite une action de configuration réelle (création d'un job planifié) à valider avec l'utilisateur avant activation.
 
-**Statut** : prête à être implémentée (en attente de go pour activer réellement la routine).
+**Statut** : ✅ activée le 2026-07-25. Routine `radar-de-veille-quotidien` (id `trig_01KgVExpAgQPhH4hnLDScBsF`), cron `0 5 * * *` (UTC), première exécution prévue le 2026-07-26 à 05:07 UTC (~7h07 Paris). Console : https://claude.ai/code/routines/trig_01KgVExpAgQPhH4hnLDScBsF
