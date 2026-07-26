@@ -71,11 +71,30 @@
   .risk-badge { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.2rem 0.5rem; border-radius: 999px; white-space: nowrap; }
   .risk-modere { background: var(--warn-bg); color: #9a6a00; }
   .risk-eleve { background: var(--crit-bg); color: var(--critical); }
-  :root[data-theme="dark"] .risk-modere, @media (prefers-color-scheme: dark) { }
   .stock-amount { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; }
   .stock-pct { color: var(--text-faint); font-size: 0.8rem; font-weight: 500; }
   .stock-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.3rem 0; border-top: 1px dashed var(--grid); }
   .stock-row b { font-family: var(--mono); }
+  .stock-row b.perf-good, .perf-good { color: var(--good); }
+  .stock-row b.perf-bad, .perf-bad { color: var(--critical); }
+
+  /* Suivi de performance */
+  .perf-summary { padding: 1.1rem 1.3rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
+  .perf-figure { font-family: var(--mono); font-size: 2rem; font-weight: 700; line-height: 1; }
+  .perf-caption { font-size: 0.82rem; color: var(--text-mute); max-width: 32rem; }
+  .spark-card { padding: 1rem 1.2rem 1.2rem; }
+  .spark-svg { width: 100%; height: 64px; display: block; }
+  .spark-days { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.68rem; color: var(--text-faint); margin-top: 0.3rem; }
+  .review-card { padding: 1.1rem 1.3rem 1.25rem; }
+  .review-pending { font-size: 0.85rem; color: var(--text-faint); font-style: italic; }
+  .review-verdict { font-size: 0.86rem; line-height: 1.55; margin: 0 0 0.9rem; }
+  .review-list { display: grid; gap: 0.6rem; }
+  .review-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.84rem; }
+  .review-action { font-family: var(--mono); font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.2rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .action-conserver { background: var(--surface-2); color: var(--text-mute); }
+  .action-renforcer { background: var(--warn-bg); color: var(--good); }
+  .action-alleger, .action-remplacer { background: var(--crit-bg); color: var(--critical); }
+  .review-row span.review-reason { color: var(--text-mute); }
   .stock-link { font-size: 0.86rem; line-height: 1.5; color: var(--text-mute); margin: 0.2rem 0 0; }
   .stock-source { font-size: 0.74rem; margin-top: 0.4rem; }
   .stock-source a { color: var(--amber); }
@@ -106,6 +125,27 @@
     <div class="disclaimer">
       <b>⚠ Analyse informative, pas un conseil en investissement personnalisé.</b> Cette simulation croise les signaux déjà collectés par le radar avec des recherches ponctuelles — elle ne remplace pas l'avis d'un conseiller financier agréé, en particulier pour une décision réelle de 10 000 € dans un cadre fiscal PEA. Les cours affichés datent du moment de la recherche (25-26/07/2026) et ne sont pas mis à jour en temps réel.
     </div>
+
+    <section>
+      <p class="section-title">Performance depuis la simulation</p>
+      <p class="section-sub">Suivi quotidien sur 2 semaines (26/07 → 09/08/2026) pour vérifier si les choix initiaux tiennent la route</p>
+      <div class="card perf-summary">
+        <div id="perf-figure" class="perf-figure">—</div>
+        <p class="perf-caption" id="perf-caption">En attente de la première mise à jour de cours par la routine quotidienne.</p>
+      </div>
+      <div class="card spark-card" style="margin-top:0.9rem;">
+        <svg class="spark-svg" id="perf-spark" viewBox="0 0 300 64" preserveAspectRatio="none"></svg>
+        <div class="spark-days" id="perf-days"></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="section-title">Bilan à 2 semaines</p>
+      <p class="section-sub">Comparaison performance réelle / thèse initiale, avec recommandations (disponible à partir du 09/08/2026)</p>
+      <div class="card review-card" id="review-card">
+        <p class="review-pending">Bilan pas encore disponible — la routine le complète automatiquement 14 jours après le lancement de la simulation (26/07/2026).</p>
+      </div>
+    </section>
 
     <section>
       <p class="section-title">Répartition des 10 000 €</p>
@@ -145,29 +185,48 @@
   var colors = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)", "var(--c6)", "var(--c7)"];
   var positions = [
     { name: "Thales", sector: "Défense / cybersécurité", amount: 2000, link: "Budgets militaires en hausse, tensions géopolitiques", risk: "modéré",
-      price: "236,40 €", change: "-0,80 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Carnet de commandes record 53,3 Md€ (2025) · capitalisation 48,68 Md€ · commandes T2 en forte hausse (radars Roumanie, accord-cadre Rheinmetall)",
+      price: "236,40 €", priceNum: 236.40, entryPrice: 236.40, entryDate: "2026-07-26", change: "-0,80 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Carnet de commandes record 53,3 Md€ (2025) · capitalisation 48,68 Md€ · commandes T2 en forte hausse (radars Roumanie, accord-cadre Rheinmetall)",
       source: "https://www.boursorama.com/cours/1rPHO/" },
     { name: "Dassault Aviation", sector: "Aéronautique défense", amount: 2000, link: "A mené la levée Series B (200 M$) d'Harmattan AI ; détient 26% de Thales", risk: "modéré",
-      price: "299,20 €", change: "-1,77 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Exposition défense directe + accès indirect à l'écosystème drone (Harmattan AI) ; résultats S1 2026 en nette hausse (+83% résultat opérationnel ajusté)",
+      price: "299,20 €", priceNum: 299.20, entryPrice: 299.20, entryDate: "2026-07-26", change: "-1,77 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Exposition défense directe + accès indirect à l'écosystème drone (Harmattan AI) ; résultats S1 2026 en nette hausse (+83% résultat opérationnel ajusté)",
       source: "https://www.boursorama.com/cours/1rPAM/" },
     { name: "Valeo", sector: "Équipementier auto → drones", amount: 1500, link: "Partenariat direct Harmattan AI (moteurs de drones, sujet Drone du radar)", risk: "modéré",
-      price: "13,73 €", change: "-2,31 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Diversification vers la défense après les datacenters ; production France dès 2027",
+      price: "13,73 €", priceNum: 13.73, entryPrice: 13.73, entryDate: "2026-07-26", change: "-2,31 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Diversification vers la défense après les datacenters ; production France dès 2027",
       source: "https://www.boursorama.com/cours/1rPFR/" },
     { name: "Safran", sector: "Aéronautique / défense", amount: 1500, link: "Cité systématiquement parmi les valeurs défense à suivre", risk: "modéré",
-      price: "329,80 €", change: "+2,61 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Diversifie l'exposition défense hors du duo Thales/Dassault Aviation",
+      price: "329,80 €", priceNum: 329.80, entryPrice: 329.80, entryDate: "2026-07-26", change: "+2,61 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Diversifie l'exposition défense hors du duo Thales/Dassault Aviation",
       source: "https://www.boursorama.com/cours/1rPSAF/" },
     { name: "Capgemini", sector: "Services IT / IA", amount: 1500, link: "Croissance +11% tirée par l'IA (T1 2026)", risk: "modéré",
-      price: "89,88 €", change: "+4,44 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Profil IA \"value\", moins volatil que les purs éditeurs de logiciels IA ; rebond après une phase de faiblesse en juin",
+      price: "89,88 €", priceNum: 89.88, entryPrice: 89.88, entryDate: "2026-07-26", change: "+4,44 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Profil IA \"value\", moins volatil que les purs éditeurs de logiciels IA ; rebond après une phase de faiblesse en juin",
       source: "https://www.boursorama.com/cours/1rPCAP/" },
     { name: "STMicroelectronics", sector: "Semi-conducteurs", amount: 1000, link: "Revenus datacenter IA visant ~1 Md$ en 2026", risk: "élevé",
-      price: "46,77 €", change: "-2,46 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Pari IA plus risqué : CA T2 +12,7% mais prévisions T3 sous les attentes, action ayant déjà chuté ~14-18% le 23/07",
+      price: "46,77 €", priceNum: 46.77, entryPrice: 46.77, entryDate: "2026-07-26", change: "-2,46 % (24/07, dernière séance — marché fermé le 26/07)", detail: "Pari IA plus risqué : CA T2 +12,7% mais prévisions T3 sous les attentes, action ayant déjà chuté ~14-18% le 23/07",
       source: "https://www.boursorama.com/cours/1rPSTMPA/" },
     { name: "Réserve de liquidités", sector: "—", amount: 500, link: "Observer Dassault Systèmes avant d'entrer (volatilité IA)", risk: "—",
-      price: "—", change: "—", detail: "Dassault Systèmes a chuté fortement sur craintes de disruption IA (Anthropic/Prometheus) — à surveiller plutôt qu'à acheter tout de suite",
+      price: "—", priceNum: null, entryPrice: null, entryDate: null, change: "—", detail: "Dassault Systèmes a chuté fortement sur craintes de disruption IA (Anthropic/Prometheus) — à surveiller plutôt qu'à acheter tout de suite",
       source: "https://www.bloomberg.com/news/articles/2026-02-11/dassault-systemes-shares-plunge-most-since-2002-on-weak-outlook" }
   ];
 
+  // __PORTFOLIO_HISTORY_DATA_START__
+  var portfolioHistory = [
+  {"date":"2026-07-26","perf_pct":0.0,"prices":{"Thales":236.40,"Dassault Aviation":299.20,"Valeo":13.73,"Safran":329.80,"Capgemini":89.88,"STMicroelectronics":46.77}}
+];
+  // __PORTFOLIO_HISTORY_DATA_END__
+
+  // __PORTFOLIO_REVIEW_DATA_START__
+  var review = null;
+  // __PORTFOLIO_REVIEW_DATA_END__
+
   var total = positions.reduce(function (s, p) { return s + p.amount; }, 0);
+
+  function perfPct(p) {
+    if (p.priceNum == null || p.entryPrice == null) return null;
+    return (p.priceNum / p.entryPrice - 1) * 100;
+  }
+
+  function fmtPct(v) {
+    return (v > 0 ? "+" : "") + v.toFixed(2).replace(".", ",") + " %";
+  }
 
   var allocBar = document.getElementById("alloc-bar");
   var allocLegend = document.getElementById("alloc-legend");
@@ -192,6 +251,9 @@
   positions.forEach(function (p, i) {
     var pct = (p.amount / total * 100).toFixed(1);
     var isCash = p.name === "Réserve de liquidités";
+    var perf = perfPct(p);
+    var perfRow = perf == null ? "" :
+      '<div class="stock-row"><span>Depuis simulation (' + p.entryDate.slice(8, 10) + '/' + p.entryDate.slice(5, 7) + ')</span><b class="' + (perf >= 0 ? "perf-good" : "perf-bad") + '">' + fmtPct(perf) + '</b></div>';
     var card = document.createElement("div");
     card.className = "card stock-card";
     card.style.borderTop = "3px solid " + colors[i];
@@ -199,7 +261,7 @@
       '<div class="stock-top"><div><p class="stock-name">' + p.name + '</p><p class="stock-sector">' + p.sector + '</p></div>' +
       (p.risk !== "—" ? '<span class="risk-badge risk-' + (p.risk === "élevé" ? "eleve" : "modere") + '">' + p.risk + '</span>' : '') + '</div>' +
       '<div><span class="stock-amount">' + p.amount.toLocaleString("fr-FR") + ' €</span> <span class="stock-pct">(' + pct + '%)</span></div>' +
-      (!isCash ? '<div class="stock-row"><span>Cours</span><b>' + p.price + '</b></div><div class="stock-row"><span>Variation</span><b>' + p.change + '</b></div>' : '') +
+      (!isCash ? '<div class="stock-row"><span>Cours</span><b>' + p.price + '</b></div><div class="stock-row"><span>Variation</span><b>' + p.change + '</b></div>' + perfRow : '') +
       '<p class="stock-link">' + p.detail + '</p>' +
       '<p class="stock-source"><a href="' + p.source + '" target="_blank" rel="noopener">Source</a></p>';
     stockGrid.appendChild(card);
@@ -208,5 +270,73 @@
     tr.innerHTML = "<td>" + p.name + "</td><td>" + p.sector + "</td><td class=\"num\">" + p.amount.toLocaleString("fr-FR") + " €</td><td class=\"num\">" + pct + "%</td><td>" + p.link + "</td><td>" + (p.risk !== "—" ? p.risk : "—") + "</td>";
     histBody.appendChild(tr);
   });
+
+  // Performance summary (weighted by amount, cash reserve contributes 0)
+  (function () {
+    var last = portfolioHistory[portfolioHistory.length - 1];
+    var figure = document.getElementById("perf-figure");
+    var caption = document.getElementById("perf-caption");
+    figure.textContent = fmtPct(last.perf_pct);
+    figure.className = "perf-figure " + (last.perf_pct >= 0 ? "perf-good" : "perf-bad");
+    var day = portfolioHistory.length;
+    caption.textContent = "Jour " + day + "/14 de suivi (dernière mise à jour : " + last.date.slice(8, 10) + "/" + last.date.slice(5, 7) + "/" + last.date.slice(0, 4) + "). Performance pondérée par montant investi, réserve de liquidités incluse au dénominateur à 0 %.";
+  })();
+
+  // Sparkline (J1-J14)
+  (function () {
+    var svg = document.getElementById("perf-spark");
+    var daysEl = document.getElementById("perf-days");
+    var vals = portfolioHistory.map(function (h) { return h.perf_pct; });
+    var min = Math.min(0, Math.min.apply(null, vals));
+    var max = Math.max(0, Math.max.apply(null, vals));
+    var range = (max - min) || 1;
+    var w = 300, h = 64, pad = 4;
+    var stepX = vals.length > 1 ? (w - pad * 2) / (vals.length - 1) : 0;
+    function yFor(v) { return h - pad - ((v - min) / range) * (h - pad * 2); }
+    var pts = vals.map(function (v, i) { return (pad + i * stepX) + "," + yFor(v); });
+    var zeroY = yFor(0);
+    var zeroLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    zeroLine.setAttribute("x1", pad); zeroLine.setAttribute("x2", w - pad);
+    zeroLine.setAttribute("y1", zeroY); zeroLine.setAttribute("y2", zeroY);
+    zeroLine.setAttribute("stroke", "var(--grid)"); zeroLine.setAttribute("stroke-width", "1");
+    svg.appendChild(zeroLine);
+    var path = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    path.setAttribute("points", pts.join(" "));
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", vals[vals.length - 1] >= 0 ? "var(--good)" : "var(--critical)");
+    path.setAttribute("stroke-width", "2");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    svg.appendChild(path);
+    var lastPt = pts[pts.length - 1].split(",");
+    var dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    dot.setAttribute("cx", lastPt[0]); dot.setAttribute("cy", lastPt[1]); dot.setAttribute("r", "3");
+    dot.setAttribute("fill", vals[vals.length - 1] >= 0 ? "var(--good)" : "var(--critical)");
+    svg.appendChild(dot);
+    portfolioHistory.forEach(function (hData, i) {
+      if (i === 0 || i === portfolioHistory.length - 1 || portfolioHistory.length <= 5) {
+        var lbl = document.createElement("span");
+        lbl.textContent = hData.date.slice(8, 10) + "/" + hData.date.slice(5, 7);
+        daysEl.appendChild(lbl);
+      }
+    });
+    if (portfolioHistory.length < 3) {
+      var note = document.createElement("span");
+      note.textContent = "Historique court (" + portfolioHistory.length + " jour" + (portfolioHistory.length > 1 ? "s" : "") + ") — la courbe s'étoffera au fil des mises à jour quotidiennes.";
+      daysEl.appendChild(note);
+    }
+  })();
+
+  // Bilan à 2 semaines (rempli par la routine au J+14)
+  (function () {
+    if (!review) return;
+    var card = document.getElementById("review-card");
+    var html = '<p class="review-verdict">' + review.verdict + '</p><div class="review-list">';
+    review.recommendations.forEach(function (r) {
+      html += '<div class="review-row"><span class="review-action action-' + r.action + '">' + r.action + '</span><b>' + r.name + '</b><span class="review-reason">' + r.reason + '</span></div>';
+    });
+    html += '</div><p class="stock-source" style="margin-top:0.8rem;">Bilan établi le ' + review.date.slice(8, 10) + '/' + review.date.slice(5, 7) + '/' + review.date.slice(0, 4) + ' — analyse informative, pas un conseil en investissement personnalisé.</p>';
+    card.innerHTML = html;
+  })();
 })();
 </script>
