@@ -131,3 +131,5 @@ Ajouté le 2026-07-26, à la demande de l'utilisateur : simuler une allocation d
 - [ ] Suivi quotidien automatique (comme F5/F6) — pas encore mis en place pour ce portefeuille ; à faire si demandé.
 
 **Statut** : ✅ publiée le 2026-07-26 — pas de suivi quotidien automatique pour l'instant (portefeuille figé à la demande initiale, pas intégré à la routine cloud).
+
+**Page scénario dédiée (2026-07-26)** : sur demande de l'utilisateur, création de `dashboards/scenario-juillet-drones.html` (publié https://claude.ai/code/artifact/83079bcf-c5c9-4b07-a7d0-3f3a335965c0), sur le même modèle visuel que le scénario PEA (`dashboards/scenario-juillet.html`) — carte hero de comparaison 10 000€ → valeur actuelle, barres divergentes par valeur, table complète. Contrairement au scénario PEA (contrefactuel, l'entrée réelle a eu lieu le 26/07), ici le 01/07/2026 est la vraie date d'entrée de la simulation (pas d'hypothèse) : la page réutilise donc les mêmes cours déjà sourcés dans `dashboards/simulation-drones.html`.
