@@ -1,0 +1,236 @@
+<style>
+  :root {
+    --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #eef1f6;
+    --text: #0b0b0b; --text-mute: #52514e; --text-faint: #898781;
+    --border: rgba(11,11,11,0.10); --grid: #e1e0d9; --baseline: #c3c2b7;
+    --shadow: 0 1px 2px rgba(11,11,11,0.06), 0 8px 24px rgba(11,11,11,0.05);
+    --amber: #c9791a; --amber-bg: #fbeed9;
+    --good: #006300; --critical: #d03b3b;
+    --div-pos: #2a78d6; --div-neg: #e34948; --div-mid: #c3c2b7;
+    --div-pos-bg: rgba(42,120,214,0.12); --div-neg-bg: rgba(227,73,72,0.12);
+    --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page: #0d0d0d; --surface: #1a1a19; --surface-2: #212121;
+      --text: #ffffff; --text-mute: #c3c2b7; --text-faint: #898781;
+      --border: rgba(255,255,255,0.10); --grid: #2c2c2a; --baseline: #383835;
+      --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+      --good: #0ca30c; --critical: #d03b3b;
+      --div-pos: #3987e5; --div-neg: #e66767; --div-mid: #383835;
+      --div-pos-bg: rgba(57,135,229,0.16); --div-neg-bg: rgba(230,103,103,0.16);
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #212121;
+    --text: #ffffff; --text-mute: #c3c2b7; --text-faint: #898781;
+    --border: rgba(255,255,255,0.10); --grid: #2c2c2a; --baseline: #383835;
+    --amber: #e8a23d; --amber-bg: rgba(232,162,61,0.14);
+    --good: #0ca30c; --critical: #d03b3b;
+    --div-pos: #3987e5; --div-neg: #e66767; --div-mid: #383835;
+    --div-pos-bg: rgba(57,135,229,0.16); --div-neg-bg: rgba(230,103,103,0.16);
+  }
+  :root[data-theme="light"] {
+    --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #eef1f6;
+    --text: #0b0b0b; --text-mute: #52514e; --text-faint: #898781;
+    --border: rgba(11,11,11,0.10); --grid: #e1e0d9; --baseline: #c3c2b7;
+    --amber: #c9791a; --amber-bg: #fbeed9;
+    --good: #006300; --critical: #d03b3b;
+    --div-pos: #2a78d6; --div-neg: #e34948; --div-mid: #c3c2b7;
+    --div-pos-bg: rgba(42,120,214,0.12); --div-neg-bg: rgba(227,73,72,0.12);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .app { background: var(--page); color: var(--text); font-family: var(--sans); min-height: 100vh; padding: clamp(1rem, 3vw, 2.5rem); }
+  .wrap { max-width: 62rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+  .header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.1rem; }
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin: 0 0 0.35rem; }
+  h1 { font-size: clamp(1.25rem, 2.4vw, 1.7rem); font-weight: 700; margin: 0; text-wrap: balance; }
+  .sub { font-size: 0.88rem; color: var(--text-mute); margin: 0.4rem 0 0; max-width: 46rem; }
+  .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .nav-link { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.76rem; font-weight: 600; color: var(--div-pos); text-decoration: none; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 0.4rem 0.7rem; box-shadow: var(--shadow); }
+  .nav-link:hover { background: var(--surface-2); }
+  .disclaimer { border: 1px solid var(--amber); background: var(--amber-bg); border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 0.85rem; line-height: 1.55; }
+  .disclaimer b { color: var(--text); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  .section-title { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.2rem; }
+  .section-sub { font-size: 0.82rem; color: var(--text-mute); margin: 0 0 0.9rem; }
+
+  /* Hero comparison */
+  .hero-card { padding: 1.3rem 1.4rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem 2.2rem; }
+  .hero-stop { display: flex; flex-direction: column; gap: 0.25rem; }
+  .hero-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
+  .hero-value { font-family: var(--mono); font-size: 1.7rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .hero-arrow { font-size: 1.5rem; color: var(--text-faint); }
+  .hero-delta { font-family: var(--mono); font-size: 0.95rem; font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 999px; }
+  .hero-delta.neg { color: var(--div-neg); background: var(--div-neg-bg); }
+  .hero-delta.pos { color: var(--div-pos); background: var(--div-pos-bg); }
+
+  /* Diverging bar chart */
+  .chart-card { padding: 1.2rem 1.3rem 1rem; }
+  .div-row { display: grid; grid-template-columns: 9rem 1fr 3.6rem; align-items: center; gap: 0.7rem; padding: 0.5rem 0; }
+  .div-row + .div-row { border-top: 1px dashed var(--grid); }
+  .div-name { font-size: 0.84rem; font-weight: 600; }
+  .div-track { position: relative; height: 22px; background: var(--surface-2); border-radius: 4px; }
+  .div-zero { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--baseline); }
+  .div-bar { position: absolute; top: 2px; bottom: 2px; border-radius: 4px; }
+  .div-bar.pos { background: var(--div-pos); }
+  .div-bar.neg { background: var(--div-neg); }
+  .div-value { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .div-value.pos { color: var(--div-pos); }
+  .div-value.neg { color: var(--div-neg); }
+  .chart-scale { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.66rem; color: var(--text-faint); margin: 0.6rem 9rem 0 9rem; }
+  .legend-row { display: flex; gap: 1.2rem; align-items: center; font-size: 0.78rem; color: var(--text-mute); margin-top: 0.9rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+  .legend-swatch { width: 11px; height: 11px; border-radius: 3px; }
+
+  .table-wrap { margin-top: 0; overflow-x: auto; }
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .data-table caption { text-align: left; font-size: 0.72rem; color: var(--text-faint); margin-bottom: 0.4rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+  .data-table th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); font-weight: 600; padding: 0 0.6rem 0.5rem 0; border-bottom: 1px solid var(--grid); }
+  .data-table td { padding: 0.5rem 0.6rem 0.5rem 0; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td.num { text-align: right; font-family: var(--mono); }
+  .data-table td.pos { color: var(--div-pos); }
+  .data-table td.neg { color: var(--div-neg); }
+
+  footer { font-family: var(--mono); font-size: 0.7rem; color: var(--text-faint); text-align: center; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  footer a { color: var(--text-faint); }
+</style>
+
+<div class="app">
+  <div class="wrap">
+    <header class="header">
+      <div>
+        <p class="eyebrow">Radar-Vielle · Epic F · Scénario</p>
+        <h1>Et si l'entrée avait eu lieu le 1ᵉʳ juillet 2026 ?</h1>
+        <p class="sub">Scénario contrefactuel à titre illustratif : mêmes 10 000 € et la même répartition d'origine (7 lignes), mais investis le 01/07/2026 au lieu du 26/07/2026, valorisés aux cours réels du 26/07/2026 (dernière séance : 24/07, marché fermé le week-end).</p>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="https://claude.ai/code/artifact/9474ab38-0d8f-4edb-a24a-5385a7c2eaf0" target="_blank" rel="noopener">📡 Tableau de bord projet</a>
+        <a class="nav-link" href="https://claude.ai/code/artifact/be68f308-99b4-4246-ba4b-96fd2a71ea34" target="_blank" rel="noopener">💶 Simulation réelle (26/07)</a>
+      </div>
+    </header>
+
+    <div class="disclaimer">
+      <b>⚠ Scénario hypothétique, pas un conseil en investissement personnalisé.</b> Cette page ne modifie pas la simulation réelle (entrée effective le 26/07/2026, avec son rééquilibrage du même jour) — elle sert uniquement à illustrer l'effet du <i>timing d'entrée</i> sur un exemple concret, avec des cours réels sourcés (Boursorama), jamais inventés.
+    </div>
+
+    <section>
+      <p class="section-title">Valeur du portefeuille</p>
+      <p class="section-sub">10 000 € répartis sur 6 valeurs françaises + réserve de liquidités, allocation d'origine (avant le rééquilibrage du 26/07/2026)</p>
+      <div class="card hero-card">
+        <div class="hero-stop">
+          <span class="hero-label">01/07/2026 — investissement</span>
+          <span class="hero-value">10 000,00 €</span>
+        </div>
+        <span class="hero-arrow">→</span>
+        <div class="hero-stop">
+          <span class="hero-label">26/07/2026 — valeur actuelle (dernière séance 24/07)</span>
+          <span class="hero-value" id="hero-final">—</span>
+        </div>
+        <span class="hero-delta" id="hero-delta">—</span>
+      </div>
+    </section>
+
+    <section>
+      <p class="section-title">Performance par valeur depuis le 01/07/2026</p>
+      <p class="section-sub">Barres divergentes — hausse (bleu) / baisse (rouge), échelle symétrique</p>
+      <div class="card chart-card">
+        <div id="div-chart"></div>
+        <div class="chart-scale"><span id="scale-min"></span><span>0 %</span><span id="scale-max"></span></div>
+        <div class="legend-row">
+          <div class="legend-item"><span class="legend-swatch" style="background:var(--div-pos);"></span>Hausse depuis le 01/07</div>
+          <div class="legend-item"><span class="legend-swatch" style="background:var(--div-neg);"></span>Baisse depuis le 01/07</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card" style="padding:1.1rem 1.25rem 1.25rem;">
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption>Vue tableau complète (accessibilité)</caption>
+            <thead><tr><th>Valeur</th><th style="text-align:right;">Montant investi</th><th style="text-align:right;">Cours 01/07/2026</th><th style="text-align:right;">Cours 26/07/2026¹</th><th style="text-align:right;">Performance</th><th style="text-align:right;">Valeur au 26/07</th></tr></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <p class="section-sub" style="margin:0.7rem 0 0;">¹ Marché fermé le dimanche 26/07 : cours de la dernière séance (24/07/2026).</p>
+      </div>
+    </section>
+
+    <footer>
+      Radar de veille — <a href="https://claude.ai/code/artifact/f93eaf60-eee8-4483-9295-aeb5ac7e4142" target="_blank" rel="noopener">tendances</a> · <a href="https://claude.ai/code/artifact/be68f308-99b4-4246-ba4b-96fd2a71ea34" target="_blank" rel="noopener">simulation réelle</a> · github.com/claudioborlo/Radar-Vielle
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  var rows = [
+    { name: "Thales", amount: 2000, p1: 229.40, p2: 236.40, source: "https://www.boursorama.com/cours/historique/1rPHO" },
+    { name: "Dassault Aviation", amount: 2000, p1: 292.40, p2: 299.20, source: "https://www.boursorama.com/cours/historique/1rPAM" },
+    { name: "Valeo", amount: 1500, p1: 12.64, p2: 13.73, source: "https://www.boursorama.com/cours/historique/1rPFR" },
+    { name: "Safran", amount: 1500, p1: 349.90, p2: 329.80, source: "https://www.boursorama.com/cours/historique/1rPSAF" },
+    { name: "Capgemini", amount: 1500, p1: 90.72, p2: 89.88, source: "https://www.boursorama.com/cours/historique/1rPCAP" },
+    { name: "STMicroelectronics", amount: 1000, p1: 62.37, p2: 46.77, source: "https://www.boursorama.com/cours/historique/1rPSTMPA" }
+  ];
+  var cash = 500;
+
+  rows.forEach(function (r) {
+    r.perf = (r.p2 / r.p1 - 1) * 100;
+    r.value2 = r.amount / r.p1 * r.p2;
+  });
+
+  var totalInitial = rows.reduce(function (s, r) { return s + r.amount; }, 0) + cash;
+  var totalFinal = rows.reduce(function (s, r) { return s + r.value2; }, 0) + cash;
+  var totalPerf = (totalFinal / totalInitial - 1) * 100;
+
+  function fmtEur(v) { return v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €"; }
+  function fmtPct(v) { return (v > 0 ? "+" : "") + v.toFixed(2).replace(".", ",") + " %"; }
+
+  document.getElementById("hero-final").textContent = fmtEur(totalFinal);
+  var deltaEl = document.getElementById("hero-delta");
+  deltaEl.textContent = fmtPct(totalPerf) + " (" + (totalFinal - totalInitial >= 0 ? "+" : "") + fmtEur(totalFinal - totalInitial) + ")";
+  deltaEl.className = "hero-delta " + (totalPerf >= 0 ? "pos" : "neg");
+
+  var scaleMax = Math.ceil(Math.max.apply(null, rows.map(function (r) { return Math.abs(r.perf); })) / 5) * 5;
+  document.getElementById("scale-min").textContent = "-" + scaleMax + " %";
+  document.getElementById("scale-max").textContent = "+" + scaleMax + " %";
+
+  var chart = document.getElementById("div-chart");
+  var tbody = document.getElementById("table-body");
+
+  rows.forEach(function (r) {
+    var row = document.createElement("div");
+    row.className = "div-row";
+    var halfPct = Math.abs(r.perf) / scaleMax * 50;
+    var isPos = r.perf >= 0;
+    row.innerHTML =
+      '<span class="div-name">' + r.name + '</span>' +
+      '<div class="div-track"><div class="div-zero" style="left:50%;"></div>' +
+      '<div class="div-bar ' + (isPos ? "pos" : "neg") + '" style="' + (isPos ? "left:50%;" : "right:50%;") + 'width:' + halfPct + '%;" title="' + r.name + ' — ' + fmtPct(r.perf) + ' depuis le 01/07/2026"></div></div>' +
+      '<span class="div-value ' + (isPos ? "pos" : "neg") + '">' + fmtPct(r.perf) + '</span>';
+    chart.appendChild(row);
+
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + r.name + "</td>" +
+      "<td class=\"num\">" + r.amount.toLocaleString("fr-FR") + " €</td>" +
+      "<td class=\"num\">" + r.p1.toLocaleString("fr-FR", { minimumFractionDigits: 2 }) + " €</td>" +
+      "<td class=\"num\">" + r.p2.toLocaleString("fr-FR", { minimumFractionDigits: 2 }) + " €</td>" +
+      "<td class=\"num " + (isPos ? "pos" : "neg") + "\">" + fmtPct(r.perf) + "</td>" +
+      "<td class=\"num\">" + fmtEur(r.value2) + "</td>";
+    tbody.appendChild(tr);
+  });
+
+  var trCash = document.createElement("tr");
+  trCash.innerHTML = "<td>Réserve de liquidités</td><td class=\"num\">500 €</td><td class=\"num\">—</td><td class=\"num\">—</td><td class=\"num\">0,00 %</td><td class=\"num\">500,00 €</td>";
+  tbody.appendChild(trCash);
+
+  var trTotal = document.createElement("tr");
+  trTotal.style.fontWeight = "700";
+  trTotal.innerHTML = "<td>Total</td><td class=\"num\">" + totalInitial.toLocaleString("fr-FR") + " €</td><td></td><td></td><td class=\"num " + (totalPerf >= 0 ? "pos" : "neg") + "\">" + fmtPct(totalPerf) + "</td><td class=\"num\">" + fmtEur(totalFinal) + "</td>";
+  tbody.appendChild(trTotal);
+})();
+</script>
