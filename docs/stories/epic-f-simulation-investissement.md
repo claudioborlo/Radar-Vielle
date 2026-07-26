@@ -133,3 +133,15 @@ Ajouté le 2026-07-26, à la demande de l'utilisateur : simuler une allocation d
 **Statut** : ✅ publiée le 2026-07-26 — pas de suivi quotidien automatique pour l'instant (portefeuille figé à la demande initiale, pas intégré à la routine cloud).
 
 **Page scénario dédiée (2026-07-26)** : sur demande de l'utilisateur, création de `dashboards/scenario-juillet-drones.html` (publié https://claude.ai/code/artifact/83079bcf-c5c9-4b07-a7d0-3f3a335965c0), sur le même modèle visuel que le scénario PEA (`dashboards/scenario-juillet.html`) — carte hero de comparaison 10 000€ → valeur actuelle, barres divergentes par valeur, table complète. Contrairement au scénario PEA (contrefactuel, l'entrée réelle a eu lieu le 26/07), ici le 01/07/2026 est la vraie date d'entrée de la simulation (pas d'hypothèse) : la page réutilise donc les mêmes cours déjà sourcés dans `dashboards/simulation-drones.html`.
+
+## Story F10 — Scénario Cryptomonnaies (nouveau, 2026-07-26)
+
+**Déclencheur** : demande de l'utilisateur — ajouter un scénario équivalent pour les cryptomonnaies, sur le même modèle que les scénarios PEA et Drones.
+
+**Portefeuille** : 10 000 € répartis 50/50 entre Bitcoin et Ethereum — les deux seules cryptomonnaies suivies par le radar (CLAUDE.md, sujet 7 ; pas d'autre coin dans le périmètre actuel). Entrée le 01/07/2026, cours sourcés via l'historique Investing.com (BTC 60 014,20$, ETH 1 609,31$) ; valorisation actuelle au 26/07/2026 via les cours déjà vérifiés lors du test technique Story B2 (CoinGecko, PR #8 : BTC ~64 455$, ETH ~1 886$). Résultat : +12,30% (11 229,60 €), Ethereum (+17,19%) surperformant nettement Bitcoin (+7,40%).
+
+**Page publiée** : `dashboards/scenario-juillet-crypto.html`, https://claude.ai/code/artifact/d89485db-fa7a-44fc-ad9f-a3d29c8e4005 — carte hero, barre de répartition 50/50, barres divergentes, table complète, méthodologie/sources détaillées (dont la précision que la performance est calculée sur les cours en dollars, sans effet de change EUR/USD).
+
+**Différence avec les autres scénarios** : ceci est une simulation entièrement rétroactive/illustrative (pas de suivi quotidien automatique, pas de lien avec la routine cloud) — contrairement aux portefeuilles PEA et Drones qui sont des simulations vivantes suivies quotidiennement.
+
+**Statut** : ✅ publiée le 2026-07-26.
