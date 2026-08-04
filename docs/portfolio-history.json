@@ -7,5 +7,6 @@
   {"date":"2026-07-31","perf_pct":4.69,"prices":{"Thales":243.30,"Dassault Aviation":300.00,"Valeo":14.98,"Safran":340.30,"Capgemini":102.00,"STMicroelectronics":45.63,"Drone Volt":0.3692,"Parrot":10.06}},
   {"date":"2026-08-01","perf_pct":4.55,"prices":{"Thales":245.90,"Dassault Aviation":298.20,"Valeo":14.88,"Safran":338.40,"Capgemini":102.50,"STMicroelectronics":45.675,"Drone Volt":0.3560,"Parrot":9.94}},
   {"date":"2026-08-02","perf_pct":4.55,"prices":{"Thales":245.90,"Dassault Aviation":298.20,"Valeo":14.88,"Safran":338.40,"Capgemini":102.50,"STMicroelectronics":45.675,"Drone Volt":0.3560,"Parrot":9.94}},
-  {"date":"2026-08-03","perf_pct":4.55,"prices":{"Thales":245.90,"Dassault Aviation":298.20,"Valeo":14.88,"Safran":338.40,"Capgemini":102.50,"STMicroelectronics":45.675,"Drone Volt":0.3560,"Parrot":9.94}}
+  {"date":"2026-08-03","perf_pct":4.55,"prices":{"Thales":245.90,"Dassault Aviation":298.20,"Valeo":14.88,"Safran":338.40,"Capgemini":102.50,"STMicroelectronics":45.675,"Drone Volt":0.3560,"Parrot":9.94}},
+  {"date":"2026-08-04","perf_pct":7.24,"prices":{"Thales":253.80,"Dassault Aviation":304.80,"Valeo":14.975,"Safran":351.30,"Capgemini":107.20,"STMicroelectronics":45.27,"Drone Volt":0.3570,"Parrot":9.850}}
 ]
