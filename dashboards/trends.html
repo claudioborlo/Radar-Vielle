@@ -295,6 +295,66 @@ __METRICS_DATA_END__-->
   {"date":"2026-10-14","bourse":{"triggered":false,"max_move_pct":-0.55},"techia":{"triggered":false},"drone":{"triggered":false},"climat":{"triggered":false},"matieres":{"triggered":false,"or_usd":4164.0,"cuivre_usd":6.73},"immobilier":{"triggered":false,"prix_m2_eur":9600},"crypto":{"triggered":false,"btc_usd":83728.14,"eth_usd":2512.71}},
   {"date":"2026-10-15","bourse":{"triggered":true,"max_move_pct":-2.02},"techia":{"triggered":false},"drone":{"triggered":false},"climat":{"triggered":false},"matieres":{"triggered":false,"or_usd":4145.4,"cuivre_usd":6.54},"immobilier":{"triggered":false,"prix_m2_eur":9600},"crypto":{"triggered":true,"btc_usd":81581.44,"eth_usd":2381.2}}
   ];
+
+  var banner = document.getElementById("banner-note");
+  var n = history.length;
+  banner.textContent = n < 3
+    ? "Historique en construction — " + n + " jour" + (n > 1 ? "s" : "") + " suivi" + (n > 1 ? "s" : "") + " depuis le " + history[0].date + ". Les courbes deviendront plus lisibles à mesure que les jours s'accumulent."
+    : n + " jours suivis depuis le " + history[0].date + ".";
+
+  function fmt(v, unit, decimals) {
+    if (v === undefined || v === null) return "—";
+    return v.toLocaleString("fr-FR", { minimumFractionDigits: decimals || 0, maximumFractionDigits: decimals || 2 }) + (unit || "");
+  }
+
+  function sparkline(values) {
+    if (values.length < 2) return "";
+    var w = 240, h = 40, pad = 4;
+    var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+    var range = (max - min) || 1;
+    var pts = values.map(function (v, i) {
+      var x = pad + (i / (values.length - 1)) * (w - 2 * pad);
+      var y = h - pad - ((v - min) / range) * (h - 2 * pad);
+      return [x, y];
+    });
+    var line = pts.map(function (p) { return p[0] + "," + p[1]; }).join(" ");
+    var area = "0," + h + " " + line + " " + w + "," + h;
+    var last = pts[pts.length - 1];
+    return '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+      '<polygon class="spark-area" points="' + area + '"></polygon>' +
+      '<polyline class="spark-line" points="' + line + '"></polyline>' +
+      '<circle class="spark-dot" cx="' + last[0] + '" cy="' + last[1] + '" r="3"></circle>' +
+      '</svg>';
+  }
+
+  var quantMetrics = [
+    { key: "bourse-move", label: "Bourse — mouvement max du jour", unit: " %", decimals: 2, get: function (d) { return d.bourse && d.bourse.max_move_pct; } },
+    { key: "or", label: "Or", unit: " $/once", decimals: 2, get: function (d) { return d.matieres && d.matieres.or_usd; } },
+    { key: "cuivre", label: "Cuivre", unit: " $/lb", decimals: 2, get: function (d) { return d.matieres && d.matieres.cuivre_usd; } },
+    { key: "immo", label: "Immobilier Paris", unit: " €/m²", decimals: 0, get: function (d) { return d.immobilier && d.immobilier.prix_m2_eur; } },
+    { key: "btc", label: "Bitcoin (BTC)", unit: " $", decimals: 0, get: function (d) { return d.crypto && d.crypto.btc_usd; } },
+    { key: "eth", label: "Ethereum (ETH)", unit: " $", decimals: 0, get: function (d) { return d.crypto && d.crypto.eth_usd; } }
+  ];
+
+  var quantGrid = document.getElementById("quant-grid");
+  quantMetrics.forEach(function (m) {
+    var values = history.map(m.get).filter(function (v) { return v !== undefined && v !== null; });
+    var latest = values.length ? values[values.length - 1] : null;
+    var card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML =
+      '<p class="card-label">' + m.label + '</p>' +
+      '<p class="card-value">' + fmt(latest, m.unit, m.decimals) + '</p>' +
+      sparkline(values) +
+      '<p class="card-note">' + (values.length < 2 ? "Historique en construction" : values.length + " points") + '</p>';
+    quantGrid.appendChild(card);
+  });
+
+  var qualSubjects = [
+    { key: "techia", label: "Tech / IA / IT" },
+    { key: "climat", label: "Climat" },
+    { key: "drone", label: "Robot / Drone" }
+  ];
   var qualRows = document.getElementById("qual-rows");
   qualSubjects.forEach(function (s) {
     var cells = history.map(function (d) {
