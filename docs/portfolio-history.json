@@ -1426,5 +1426,19 @@
       "Drone Volt": 0.194,
       "Parrot": 7.8
     }
+  },
+  {
+    "date": "2026-11-06",
+    "perf_pct": -1.46,
+    "prices": {
+      "Thales": 224.6,
+      "Dassault Aviation": 302.6,
+      "Valeo": 10.935,
+      "Safran": 297.6,
+      "Capgemini": 130.5,
+      "STMicroelectronics": 37.065,
+      "Drone Volt": 0.185,
+      "Parrot": 7.38
+    }
   }
 ]
