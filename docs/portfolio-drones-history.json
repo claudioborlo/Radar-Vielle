@@ -1318,5 +1318,17 @@
       "Leonardo": 50.62,
       "Tonner Drones": 0.0199
     }
+  },
+  {
+    "date": "2026-11-13",
+    "perf_pct": -27.35,
+    "prices": {
+      "Embention": 27.00,
+      "Rheinmetall": 772.60,
+      "Parrot": 7.44,
+      "Drone Volt": 0.1912,
+      "Leonardo": 49.865,
+      "Tonner Drones": 0.02
+    }
   }
 ]
