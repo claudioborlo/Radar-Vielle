@@ -3268,5 +3268,35 @@
       "btc_usd": 73581.28,
       "eth_usd": 2046.1
     }
+  },
+  {
+    "date": "2026-11-13",
+    "bourse": {
+      "triggered": false,
+      "max_move_pct": -1.32
+    },
+    "techia": {
+      "triggered": true
+    },
+    "drone": {
+      "triggered": false
+    },
+    "climat": {
+      "triggered": false
+    },
+    "matieres": {
+      "triggered": false,
+      "or_usd": 3917.1,
+      "cuivre_usd": 6.2274
+    },
+    "immobilier": {
+      "triggered": false,
+      "prix_m2_eur": 9550
+    },
+    "crypto": {
+      "triggered": true,
+      "btc_usd": 68784.26,
+      "eth_usd": 1929.42
+    }
   }
 ]
