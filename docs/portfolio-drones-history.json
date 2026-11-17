@@ -1297,22 +1297,22 @@
   },
   {
     "date": "2026-11-11",
-    "perf_pct": -22.40,
+    "perf_pct": -22.4,
     "prices": {
-      "Embention": 31.60,
-      "Rheinmetall": 853.30,
+      "Embention": 31.6,
+      "Rheinmetall": 853.3,
       "Parrot": 7.46,
       "Drone Volt": 0.1948,
       "Leonardo": 51.54,
-      "Tonner Drones": 0.0190
+      "Tonner Drones": 0.019
     }
   },
   {
     "date": "2026-11-12",
     "perf_pct": -26.12,
     "prices": {
-      "Embention": 27.00,
-      "Rheinmetall": 807.00,
+      "Embention": 27.0,
+      "Rheinmetall": 807.0,
       "Parrot": 7.46,
       "Drone Volt": 0.199,
       "Leonardo": 50.62,
@@ -1323,8 +1323,8 @@
     "date": "2026-11-13",
     "perf_pct": -27.35,
     "prices": {
-      "Embention": 27.00,
-      "Rheinmetall": 772.60,
+      "Embention": 27.0,
+      "Rheinmetall": 772.6,
       "Parrot": 7.44,
       "Drone Volt": 0.1912,
       "Leonardo": 49.865,
@@ -1335,11 +1335,11 @@
     "date": "2026-11-14",
     "perf_pct": -25.41,
     "prices": {
-      "Embention": 31.00,
-      "Rheinmetall": 765.50,
+      "Embention": 31.0,
+      "Rheinmetall": 765.5,
       "Parrot": 7.17,
       "Drone Volt": 0.1904,
-      "Leonardo": 50.10,
+      "Leonardo": 50.1,
       "Tonner Drones": 0.0204
     }
   },
@@ -1347,11 +1347,11 @@
     "date": "2026-11-15",
     "perf_pct": -25.41,
     "prices": {
-      "Embention": 31.00,
-      "Rheinmetall": 765.50,
+      "Embention": 31.0,
+      "Rheinmetall": 765.5,
       "Parrot": 7.17,
       "Drone Volt": 0.1904,
-      "Leonardo": 50.10,
+      "Leonardo": 50.1,
       "Tonner Drones": 0.0204
     }
   },
@@ -1359,12 +1359,24 @@
     "date": "2026-11-16",
     "perf_pct": -25.38,
     "prices": {
-      "Embention": 31.00,
-      "Rheinmetall": 766.80,
+      "Embention": 31.0,
+      "Rheinmetall": 766.8,
       "Parrot": 7.17,
       "Drone Volt": 0.1904,
-      "Leonardo": 50.10,
+      "Leonardo": 50.1,
       "Tonner Drones": 0.0204
+    }
+  },
+  {
+    "date": "2026-11-17",
+    "perf_pct": -25.49,
+    "prices": {
+      "Embention": 30.6,
+      "Rheinmetall": 769.7,
+      "Parrot": 7.31,
+      "Drone Volt": 0.183,
+      "Leonardo": 50.53,
+      "Tonner Drones": 0.0203
     }
   }
 ]
